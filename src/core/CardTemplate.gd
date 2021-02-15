@@ -2399,5 +2399,5 @@ func _on_Back_resized() -> void:
 	# At the loop at line 91, is active
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
-		print_debug($Control/Back.rect_size) # Replace with function body.
+#		print_debug($Control/Back.rect_size) # Replace with function body.
 

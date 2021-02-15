@@ -3,6 +3,9 @@ extends Board
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	var dir = OS.get_user_data_dir()
+	print(str("user data dir", dir))
+	
 	counters = $Counters
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped

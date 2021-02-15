@@ -2,10 +2,10 @@ extends CardFront
 
 func _ready() -> void:
 	text_expansion_multiplier = {
-		"Name": 2,
-		"Tags": 1.2,
-		"Cost": 3,
-		"Power": 3,
+		"Name": 1,
+		"Tags": 1,
+		"Cost": 1,
+		"Power": 1,
 	}
 	compensation_label = "Abilities"
 	_card_text = $Margin/CardText

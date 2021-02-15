@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://src/cc/Hand.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
@@ -11,7 +11,9 @@
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
 [ext_resource path="res://src/core/DeckBuilder/DeckBuilder.tscn" type="PackedScene" id=10]
 [ext_resource path="res://src/cc/Discard.gd" type="Script" id=11]
-[ext_resource path="res://assets/scenebg/train-interior.png" type="Texture" id=12]
+[ext_resource path="res://assets/backgrounds/train-interior.png" type="Texture" id=12]
+[ext_resource path="res://assets/characters/npc.png" type="Texture" id=13]
+[ext_resource path="res://assets/characters/avatar.png" type="Texture" id=14]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
@@ -40,6 +42,16 @@ __meta__ = {
 position = Vector2( 960, 540 )
 texture = ExtResource( 12 )
 
+[node name="avatar" type="Sprite" parent="."]
+position = Vector2( 785.318, 494.585 )
+scale = Vector2( 0.310345, 0.310345 )
+texture = ExtResource( 14 )
+
+[node name="npc" type="Sprite" parent="."]
+position = Vector2( 1149.32, 511.172 )
+scale = Vector2( 0.310345, 0.310345 )
+texture = ExtResource( 13 )
+
 [node name="Deck" parent="." instance=ExtResource( 2 )]
 position = Vector2( 0, 475 )
 script = ExtResource( 4 )
@@ -65,8 +77,9 @@ margin_top = 205.0
 margin_bottom = 219.0
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
-margin_right = 12.0
-margin_bottom = 20.0
+visible = false
+margin_right = 189.0
+margin_bottom = 40.0
 pressed = true
 text = "Fancy Movement"
 __meta__ = {
@@ -74,6 +87,7 @@ __meta__ = {
 }
 
 [node name="EnableAttach" type="CheckButton" parent="."]
+visible = false
 margin_left = 194.978
 margin_top = 1.33486
 margin_right = 395.978
@@ -84,6 +98,7 @@ __meta__ = {
 }
 
 [node name="ScalingFocusOptions" type="OptionButton" parent="."]
+visible = false
 margin_left = -1.33484
 margin_top = 44.0497
 margin_right = 187.665
@@ -117,6 +132,7 @@ __meta__ = {
 }
 
 [node name="OvalHandToggle" type="CheckButton" parent="."]
+visible = false
 margin_left = 405.31
 margin_top = 1.12245
 margin_right = 594.31
@@ -128,6 +144,7 @@ __meta__ = {
 }
 
 [node name="DeckBuilder" type="Button" parent="."]
+visible = false
 margin_left = 205.0
 margin_top = 45.0
 margin_right = 345.0
@@ -138,6 +155,7 @@ __meta__ = {
 }
 
 [node name="Debug" type="CheckButton" parent="."]
+visible = false
 margin_left = 789.192
 margin_top = 3.36737
 margin_right = 978.192
@@ -149,6 +167,7 @@ __meta__ = {
 }
 
 [node name="PlacementGridDemo" parent="." instance=ExtResource( 7 )]
+visible = false
 margin_left = 775.0
 margin_top = 240.0
 margin_right = 1274.0
@@ -156,6 +175,7 @@ margin_bottom = 436.0
 highlight = Color( 0.985156, 0, 1.3, 1.3 )
 
 [node name="ModifiedLabelGrid" parent="." instance=ExtResource( 8 )]
+visible = false
 margin_left = 1015.0
 margin_top = 30.0
 margin_right = 1264.0

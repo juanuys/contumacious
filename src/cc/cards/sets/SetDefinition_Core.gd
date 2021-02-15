@@ -6,18 +6,20 @@ const SET = "Demo Set 1"
 const CARDS := {
 	"Elbow Bump": {
 		"Type": "Strike",
-		"Tags": ["Tag 1","Tag 2"],
+		"Tags": [""],
 		"Requirements": "",
-		"Abilities": "Knocks your opponent's arm off the armrest",
+		"Abilities": "Take that, funny bone!",
 		"Cost": 2,
 		"Power": 5,
+		"Face": "res://assets/cards/elbow-bump3.png"
 	},
 	"Knee Bump": {
 		"Type": "Strike",
-		"Tags": ["Tag 1","Tag 2"],
+		"Tags": [""],
 		"Requirements": "",
-		"Abilities": "Sends a pang of pain through your opponent's leg",
+		"Abilities": "Right in the knee",
 		"Cost": 2,
 		"Power": 5,
+		"Face": "res://assets/cards/knee-bump.png"
 	},
 }

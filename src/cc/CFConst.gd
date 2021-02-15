@@ -6,7 +6,6 @@
 class_name CFConst
 extends Reference
 
-
 # The possible return codes a function can return
 #
 # * OK is returned when the function did not end up doing any changes
@@ -75,11 +74,11 @@ enum OverlapShiftDirection{
 # This will also adjust all CardContainers to match
 # If you modify this property, you **must** adjust
 # the min_rect of the various control nodes inside the card front and back scenes.
-const CARD_SIZE := Vector2(150,240)
+const CARD_SIZE := Vector2(171,240)
 # Switch this off to disable fancy movement of cards during draw/discard
 const FANCY_MOVEMENT := true
 # The focus style selected for this game. See enum `FocusStyle`
-const FOCUS_STYLE = FocusStyle.BOTH
+const FOCUS_STYLE = FocusStyle.SCALED
 # If set to true, the hand will be presented in the form of an oval shape
 # If set to false, the hand will be presented with all cards
 # horizontally aligned
@@ -90,7 +89,7 @@ const HAND_USE_OVAL_SHAPE := true
 # The below scales down cards down while being dragged.
 #
 # if you don't want this behaviour, change it to Vector2(1,1)
-const CARD_SCALE_WHILE_DRAGGING := Vector2(0.4, 0.4)
+const CARD_SCALE_WHILE_DRAGGING := Vector2(1,1)
 # The location and name of the file into which to store game settings
 const SETTINGS_FILENAME := "user://CGFSettings.json"
 # The location where this game will store deck files
@@ -140,7 +139,7 @@ const PATH_MOUSE_POINTER := PATH_CORE + "MousePointer.tscn"
 # The amount of distance neighboring cards are pushed during card focus
 #
 # It's based on the card width. Bigger percentage means larger push.
-const NEIGHBOUR_PUSH := 0.75
+const NEIGHBOUR_PUSH := 0.0
 # The scale of a card while on the play area
 const PLAY_AREA_SCALE := Vector2(1, 1) * 0.8
 # The margin towards the bottom of the viewport on which to draw the cards.
@@ -177,7 +176,7 @@ const ATTACHMENT_OFFSET := [
 # The colour to use when hovering over a card.
 #
 # Reduce the multiplier to reduce glow effect or stop it altogether
-const FOCUS_HOVER_COLOUR := Color(1, 1, 1) * 1
+const FOCUS_HOVER_COLOUR := Color(1, 1, 1) * 0.5
 # The colour to use when hovering over a card with an attachment to signify
 # a valid host.
 #
