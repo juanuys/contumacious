@@ -16,15 +16,7 @@ enum ReturnCode {
 	CHANGED,
 	FAILED,
 }
-# The focus style used by the engine
-# * SCALED means that the cards simply scale up when moused over in the hand
-# * VIEWPORT means that a larger version of the card appears when mousing over it
-# * BOTH means SCALED + VIEWPORT
-enum FocusStyle {
-	SCALED
-	VIEWPORT
-	BOTH
-}
+
 # Options for pile shuffle styles.
 # * auto: Will choose a shuffle animation depending on the amount of
 #	cards in the pile.
@@ -43,33 +35,6 @@ enum ShuffleStyle {
 	SNAP,
 	OVERHAND,
 }
-# Options for displacing choosing which of the [CardContainer]s
-# sharing the same anchor to displace more.
-# * LOWER: The CardContainer with the lowest index will be displaced more
-# * HIGHER: The CardContainer with the highest index will be displaced more
-# Do not mix containers using both of these settings, unless the conflicting
-# container's OverlapShiftDirection is set to "NONE"
-enum IndexShiftPriority{
-	LOWER
-	HIGHER
-}
-# Options for displacing [CardContainer]s sharing the same anchor
-# * NONE: This CardContainer will never be displaced from its position
-# * UP: This CardContainer will be displaced upwards. Typically used when
-#	this container is using one of the bottom anchors.
-# * DOWN: This CardContainer will be displaced downwards.Typically used when
-#	this container is using one of the top anchors.
-# * LEFT: This CardContainer will be displaced leftwards. Typically used when
-#	this container is using one of the right anchors.
-# * RIGHT: This CardContainer will be displaced rightwards.Typically used when
-#	this container is using one of the left anchors.
-enum OverlapShiftDirection{
-	NONE
-	UP
-	DOWN
-	LEFT
-	RIGHT
-}
 # The card size you want your  cards to have.
 # This will also adjust all CardContainers to match
 # If you modify this property, you **must** adjust
@@ -78,7 +43,7 @@ const CARD_SIZE := Vector2(171,240)
 # Switch this off to disable fancy movement of cards during draw/discard
 const FANCY_MOVEMENT := true
 # The focus style selected for this game. See enum `FocusStyle`
-const FOCUS_STYLE = FocusStyle.SCALED
+const FOCUS_STYLE = CFInt.FocusStyle.SCALED
 # If set to true, the hand will be presented in the form of an oval shape
 # If set to false, the hand will be presented with all cards
 # horizontally aligned
