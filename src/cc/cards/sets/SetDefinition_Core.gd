@@ -11,7 +11,7 @@ const CARDS := {
 		"Abilities": "Take that, funny bone!",
 		"Cost": 2,
 		"Power": 5,
-		"Face": "res://assets/cards/elbow-bump3.png"
+#		"Face": "res://assets/cards/elbow-bump3.png"
 	},
 	"Knee Bump": {
 		"Type": "Strike",
@@ -20,6 +20,6 @@ const CARDS := {
 		"Abilities": "Right in the knee",
 		"Cost": 2,
 		"Power": 5,
-		"Face": "res://assets/cards/knee-bump.png"
+#		"Face": "res://assets/cards/knee-bump.png"
 	},
 }
