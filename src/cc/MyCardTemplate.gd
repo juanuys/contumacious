@@ -68,3 +68,19 @@ func common_pre_execution_scripts(trigger: String) -> void:
 func common_post_execution_scripts(trigger: String) -> void:
 	pass
 
+
+# This function handles filling up the card's labels according to its
+# card definition dictionary entry.
+func setup() -> void:
+	# card_name needs to be setup before we call this function
+	set_card_name(card_name)
+	# The properties of the card should be already stored in cfc
+	var defs = cfc.card_definitions
+	var read_properties = defs.get(card_name, {})
+	for property in read_properties["labels"].keys():
+		# warning-ignore:return_value_discarded
+		modify_property(property,read_properties["labels"][property], true)
+	
+	# also set the face gfx
+	card_front.load_sprites(read_properties["sprites"])
+	

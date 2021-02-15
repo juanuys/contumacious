@@ -19,7 +19,7 @@ script = ExtResource( 2 )
 texture = ExtResource( 3 )
 
 [node name="Name" parent="Margin/CardText" index="0"]
-text = "Elbow Bump"
+text = "Generic Strike"
 
 [node name="Type" parent="Margin/CardText" index="1"]
 text = ""
@@ -31,4 +31,4 @@ text = ""
 text = ""
 
 [node name="Abilities" parent="Margin/CardText" index="4"]
-text = "Take that, funny bone!"
+text = "Whammo!"

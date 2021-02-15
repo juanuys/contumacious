@@ -522,7 +522,9 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			if properties.get(property) == null\
 					or typeof(properties.get(property)) == typeof(value):
 				properties[property] = value
-			if not card_front.card_labels.has(property):
+				
+			var lbls = card_front.card_labels
+			if not lbls.has(property):
 				if not property.begins_with("_"):
 					print_debug("Warning: ", property,
 							" does not have a matching label!")
