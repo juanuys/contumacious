@@ -7,3 +7,9 @@
 [node name="Main" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
 board_scene = ExtResource( 2 )
+
+[node name="ViewportContainer" parent="." index="1"]
+margin_left = 6.5874
+margin_top = 5.76221
+margin_right = 1286.59
+margin_bottom = 725.762

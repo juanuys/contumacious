@@ -1,10 +1,8 @@
-# SP stands for "ScriptProperties".
-#
 # This class provides a library for constants which are used a key values
 # in the Card Script Definition
 #
 # It also provides a few static functions for comparing filters
-class_name SP
+class_name ScriptProperties
 extends Reference
 
 
@@ -42,7 +40,7 @@ const KEY_SUBJECT_V_SELF := "self"
 # then the script will check against trigger card only.
 #
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
-# during normal scripts tasks then the 
+# during normal scripts tasks then the
 # tasks that do not match the triggers will be skipped
 # but the script will still pass its cost check
 # This allows the same trigger, to have different tasks firing, depending
@@ -260,6 +258,15 @@ const KEY_TOKEN_NAME := "token_name"
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
 const KEY_MODIFICATION := "modification"
+# Value Type: bool (Default = false).
+#
+# Used when a script is using one of the following tasks:
+# * [mod_tokens](ScriptingEngine#mod_tokens)
+# * [mod_counters](ScriptingEngine#mod_tokens)
+#
+# Stores the modification difference into an integer to
+# be used in later tasks.
+const KEY_STORE_INTEGER := "store_integer"
 # Value Type: Dynamic (Default = 1).
 # * int.
 # * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
@@ -274,11 +281,17 @@ const KEY_OBJECT_COUNT := "object_count"
 # Value Type: String
 #
 # Used in conjunction with the following tasks
-# * [spawn_card](ScriptingEngine#spawn_card)
 # * [add_grid](ScriptingEngine#add_grid)
 #
 # This is the path to the scene we will add to the game.
 const KEY_SCENE_PATH := "scene_path"
+# Value Type: String
+#
+# Used in conjunction with the following tasks
+# * [spawn_card](ScriptingEngine#spawn_card)
+#
+# This is name of the card that will be added to the game.
+const KEY_CARD_NAME := "card_name"
 # Value Type: int
 #
 # Used by the [ask_integer](ScriptingEngine#ask_integer) task.
@@ -290,14 +303,26 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 # Specifies the maximum value the number needs to have
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # Value Type: Array of Strings
+# All card manipulation Signals will send a list of tags
+# marking the type of effect that triggered them. 
 #
-# A number of keywords you can assign to your script, which details
-# what function it is serving.
-# These can be hooked one by the [AlterantEngine]
-# to figure out if this script effects should be altered.
+# By Default it's the tags sent is just ["Manual"] 
+# for manipulation via the core API methods.
+# However when the manipulation is done via ScriptingEngine, the tags
+# can be modified by the script defintion. The ScrptingEngine will always
+# mark them as "Scripted" instead of "Manual" at the least.
 #
-# A script has to have all the tags a [KEY_ALTERANTS](#KEY_ALTERANTS) task
-# is looking for, before it will be considered to be altered.
+# With this key, you can specify a number of keywords 
+# you can assign to your script, which details what function it is serving.
+# These can be hooked on by the [AlterantEngine] and the [ScriptingEngine]
+# to figure out if this script effects should be altered or triggered. 
+#
+# Tags specified with ScriptTasks will be injected along with list sent
+# by the ScriptingEngine. So for example `"tags": ["PlayCost"]` 
+# will be sent as ["Scripted", "PlayCost"] by the ScriptingEngine.
+#
+# A signal or script has to have all the tags a 
+# [FILTER_TAGS](#FILTER_TAGS) task is looking for, in order to be considered.
 const KEY_TAGS := "tags"
 # Value Type: Dictionary
 #
@@ -399,8 +424,11 @@ const VALUE_PER := "per_"
 # Value Type: String
 #
 # This key is typically needed in combination with [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
-# to specify which property to base the per upon. The property **has** to be
-# a number.
+# to specify which property to base the per upon.
+# When used this way, the property **has** to be a number.
+#
+# Also used by Alterant filters, to specify which property to compare against
+# When adjusting a property on-the-fly
 const KEY_PROPERTY_NAME := "property_name"
 # Value Type: String (Default = "manual").
 #
@@ -433,6 +461,12 @@ const KEY_TEMP_MOD_COUNTERS := "temp_mod_counters"
 # As defined in [PROPERTIES_NUMBERS](CardConfig#PROPERTIES_NUMBERS)
 # and the value is the modification to use on that number
 const KEY_TEMP_MOD_PROPERTIES := "temp_mod_properties"
+# Value Type: Bool (Default = false)
+#
+# Used in the per dictionary to specify that the amount of things counted
+# should be returned negative.
+# This allows to have costs based on the boardstate
+const KEY_IS_INVERTED := "is_inverted"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number of tokens on the subject(s)
@@ -489,13 +523,17 @@ const KEY_PER_COUNTER := "per_counter"
 const KEY_COMPARISON := "comparison"
 # This is a versatile value that can be inserted into any various keys
 # when a task needs to use a previously inputed integer provided
-# with a [ask_integer](ScriptingEngine#ask_integer) task.
+# with a [ask_integer](ScriptingEngine#ask_integer) task
+# or a [KEY_STORE_INTEGER](#KEY_STORE_INTEGER).
+#
 # When detected ,the task will retrieve the stored number and use it as specified
 #
 # The following keys support this value
 # * [KEY_MODIFICATION](#KEY_MODIFICATION)
 # * [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT) (only for specific tasks, see documentation)
 # * [KEY_OBJECT_COUNT](#KEY_OBJECT_COUNT) (only for specific tasks, see documentation)
+# * [KEY_TEMP_MOD_PROPERTIES](#KEY_TEMP_MOD_PROPERTIES) (In the value fields)
+# * [KEY_TEMP_MOD_COUNTERS](#KEY_TEMP_MOD_COUNTERS) (In the value fields)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 # Value Type: bool (Default = false)
 #
@@ -602,6 +640,11 @@ const FILTER_STATE := "filter_state_"
 #
 # Each value is a dictionary where the  key is a card property, and the value
 # is the desired property value to match on the filtered card.
+#
+# If the card property is numerical, 
+# then the value can be a string. 
+# In that case it is assumed that the string is a counter name 
+# against which to compare the property value
 const FILTER_PROPERTIES := "filter_properties"
 #Value Type: Node.
 #
@@ -640,15 +683,6 @@ const FILTER_COUNT := "filter_count"
 # * [TRIGGER_V_COUNT_INCREASED](#TRIGGER_V_COUNT_INCREASED)
 # * [TRIGGER_V_COUNT_DECREASED](#TRIGGER_V_COUNT_DECREASED)
 const FILTER_COUNT_DIFFERENCE := "filter_count_difference"
-# Value Type: String.
-#
-# Filter used for checking against [TRIGGER_TOKEN_NAME](#TRIGGER_TOKEN_NAME)
-# and in [check_state](#check_state)
-const FILTER_TOKEN_NAME := "filter_token_name"
-# Value Type: String.
-#
-# Filter used for checking against [TRIGGER_COUNTER_NAME](#TRIGGER_COUNTER_NAME)
-const FILTER_COUNTER_NAME := "filter_counter_name"
 # Value Type: Dictionary
 #
 # Filter used for checking in [check_state](#check_state)
@@ -743,7 +777,7 @@ const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "previous_value"
 # Value Type: String or Array of Strings
 #
 # A number of keywords to try and match against [KEY_TAGS](#KEY_TAGS)
-# passed by the script definition.
+# passed by the script or signal definition.
 const FILTER_TAGS := "filter_tags"
 # Value Type: String
 #
@@ -751,8 +785,8 @@ const FILTER_TAGS := "filter_tags"
 const FILTER_TASK = "filter_task"
 # Value Type: String
 #
-# Filter used for checking against [KEY_SCENE_PATH](#KEY_SCENE_PATH)
-const FILTER_SCENE_PATH = "filter_scene_path"
+# Filter used for checking against [KEY_CARD_NAME](#KEY_CARD_NAME)
+const FILTER_CARD_NAME = "filter_card_name"
 # Value Type: Dictionary
 #
 # Requires similar input as [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
@@ -854,14 +888,21 @@ const TRIGGER_PREV_COUNT := "previous_count"
 # Value Type: String.
 #
 # Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
-# as well as via the mod_tokens alterant script
+# as well as via the mod_tokens and get_token alterant scripts
 #
 # This is the value of the token name modified
 const TRIGGER_TOKEN_NAME = "token_name"
 # Value Type: String.
 #
+# Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
+# as well as via the mod_property and get_property alterant scripts
+#
+# This is the value of the token name modified
+const TRIGGER_PROPERTY_NAME = "property_name"
+# Value Type: String.
+#
 # Filter value sent by the Counters trigger `counter_modified` [signal](Counters#signals).
-# as well as via the mod_counters alterant script
+# as well as via the mod_counters and get_counter alterant scripts
 #
 # This is the value of the token name modified
 const TRIGGER_COUNTER_NAME = "counter_name"
@@ -897,7 +938,12 @@ static func get_default(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
-		KEY_IS_COST, KEY_IS_ELSE:
+		KEY_IS_COST,\
+				KEY_IS_ELSE,\
+				KEY_IS_INVERTED,\
+				KEY_SET_TO_MOD,\
+				KEY_IS_OPTIONAL,\
+				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
 			default = "any"
@@ -907,17 +953,13 @@ static func get_default(property: String):
 			default = -1
 		KEY_BOARD_POSITION:
 			default = Vector2(-1,-1)
-		KEY_SET_TO_MOD:
-			default = false
-		KEY_MODIFICATION:
-			default = 1
-		KEY_IS_OPTIONAL:
-			default = false
 		KEY_MODIFY_PROPERTIES,\
 				KEY_TEMP_MOD_PROPERTIES,\
 				KEY_TEMP_MOD_COUNTERS:
 			default = {}
-		KEY_SUBJECT_COUNT, KEY_OBJECT_COUNT:
+		KEY_SUBJECT_COUNT,\
+				KEY_OBJECT_COUNT,\
+				KEY_MODIFICATION:
 			default = 1
 		KEY_GRID_NAME:
 			default = ""
@@ -1026,22 +1068,32 @@ static func filter_trigger(
 				TRIGGER_V_COUNT_DECREASED and prev_count < new_count:
 			is_valid = false
 
-	if is_valid and card_scripts.get(FILTER_TOKEN_NAME) \
-			and card_scripts.get(FILTER_TOKEN_NAME) != \
+	# Token Name filter checks
+	if is_valid and card_scripts.get("filter_" + TRIGGER_TOKEN_NAME) \
+			and card_scripts.get("filter_" + TRIGGER_TOKEN_NAME) != \
 			trigger_details.get(TRIGGER_TOKEN_NAME):
 		is_valid = false
 
-	# Counter filter checks
-	if is_valid and card_scripts.get(FILTER_COUNTER_NAME) \
-			and card_scripts.get(FILTER_COUNTER_NAME) != \
+	# Counter Name filter checks
+	if is_valid and card_scripts.get("filter_" + TRIGGER_COUNTER_NAME) \
+			and card_scripts.get("filter_" + TRIGGER_COUNTER_NAME) != \
 			trigger_details.get(TRIGGER_COUNTER_NAME):
 		is_valid = false
 
-	# Counter filter checks
-	if is_valid and card_scripts.get(FILTER_SCENE_PATH) \
-			and card_scripts.get(FILTER_SCENE_PATH) != \
-			trigger_details.get(KEY_SCENE_PATH):
+	# Property Name filter checks
+	# Typically used by alterants
+	if is_valid and card_scripts.get("filter_" + TRIGGER_PROPERTY_NAME) \
+			and card_scripts.get("filter_" + TRIGGER_PROPERTY_NAME) != \
+			trigger_details.get(TRIGGER_PROPERTY_NAME):
 		is_valid = false
+
+	# Card spawn filter checks
+	if is_valid and card_scripts.get(FILTER_CARD_NAME) \
+			and card_scripts.get(FILTER_CARD_NAME) != \
+			trigger_details.get(KEY_CARD_NAME):
+		is_valid = false
+
+
 	# Modified Property filter checks
 	# See FILTER_MODIFIED_PROPERTIES documentation
 	# If the trigger requires a filter on modified properties...
@@ -1135,9 +1187,17 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 					and comparison_type == "ne":
 				card_matches = false
 		elif property in CardConfig.PROPERTIES_NUMBERS:
+			var comparison_value: int
+			if typeof(property_filters[property]) == TYPE_INT:
+				comparison_value = property_filters[property]
+			# We support comparing against counters. We assume any string
+			# value is a counter name
+			else:
+				comparison_value = cfc.NMAP.board.counters.get_counter(
+						property_filters[property])
 			if not CFUtils.compare_numbers(
 					card.get_property(property),
-					property_filters[property],
+					comparison_value,
 					comparison_type):
 				card_matches = false
 		else:
@@ -1160,9 +1220,9 @@ static func check_token_filter(card, token_states: Array) -> bool:
 	for token_state in token_states:
 		var comparison_type : String = token_state.get(
 				KEY_COMPARISON, get_default(KEY_COMPARISON))
-		if token_state.get(FILTER_TOKEN_NAME):
+		if token_state.get("filter_" + TRIGGER_TOKEN_NAME):
 			var token = card.tokens.get_token(
-					token_state.get(FILTER_TOKEN_NAME))
+					token_state.get("filter_" + TRIGGER_TOKEN_NAME))
 			if not token:
 				if token_state.get(FILTER_COUNT):
 					match comparison_type:

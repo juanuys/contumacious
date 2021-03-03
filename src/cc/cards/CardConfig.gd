@@ -11,10 +11,16 @@
 class_name CardConfig
 extends Reference
 
+const CardTypes := {
+	"card_type_strike": "Strike",
+	
+}
+
 # Properties which are placed as they are in appropriate labels
 const PROPERTIES_STRINGS := ["Type", "Requirements", "Abilities"]
 # Properties which are converted into string using a format defined in setup()
 const PROPERTIES_NUMBERS := ["Cost","Power"]
+const NUMBER_WITH_LABEL := ["Cost","Power"]
 # Properties provided in a list which are converted into a string for the
 # label text, using the array_join() method
 const PROPERTIES_ARRAYS := ["Tags"]
@@ -23,4 +29,4 @@ const PROPERTIES_ARRAYS := ["Tags"]
 const SCENE_PROPERTY = "Type"
 # These are number carrying properties, which we want to hide their label
 # when they're 0, to allow more space for other labels.
-const NUMBERS_HIDDEN_ON_0 := []
+const NUMBERS_HIDDEN_ON_0 := ["Cost","Power"]

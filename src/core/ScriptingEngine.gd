@@ -71,14 +71,37 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			continue
 		if script.owner_card._debugger_hook: # Debug
 			pass
-		# In case the task involves targetting, we need to wait on further
-		# execution until targetting has completed
+		# We store the temp modifiers to counters, so that things like
+		# info during targetting can take them into account
 		cfc.NMAP.board.counters.temp_count_modifiers[self] = {
 				"requesting_card": script.owner_card,
-				"modifier": script.get_property(SP.KEY_TEMP_MOD_COUNTERS).duplicate()
+				"modifier": _retrieve_temp_modifiers(script,"counters")
 			}
+		# This is provisionally stored for games which need to use this
+		# information before card subjects have been selected.
+		cfc.card_temp_property_modifiers[self] = {
+			"requesting_card": script.owner_card,
+			"modifier": _retrieve_temp_modifiers(script, "properties")
+		}
 		if not script.is_primed:
+			# If we have requested to use the previous target,
+			# but the subject_array is empty, we check if
+			# subject available in the next task and try to use that instead.
+			# This allows a "previous" subject task, to be placed before
+			# the task which requires a target, as long as the targetting task
+			# "is_cost".
+			# This is useful for example, when the targeting task would move
+			# The subject to another pile but we want to check (#SUBJECT_PARENT)
+			# against the parent it had before it was moved.
+			if script.get_property(SP.KEY_SUBJECT) == SP.KEY_SUBJECT_V_PREVIOUS\
+					and prev_subjects.size() == 0:
+				var current_index := scripts_queue.find(task)
+				var next_task: ScriptTask =  scripts_queue[current_index + 1]
+				if next_task.subjects.size() > 0:
+					prev_subjects = next_task.subjects
 			script.prime(prev_subjects,run_type,stored_integer)
+			# In case the task involves targetting, we need to wait on further
+			# execution until targetting has completed
 			if not script.is_primed:
 				yield(script,"primed")
 		if script.owner_card._debugger_hook: # Debug
@@ -98,8 +121,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				for card in script.subjects:
 					card.temp_properties_modifiers[self] = {
 						"requesting_card": script.owner_card,
-						"modifier": script.get_property(SP.KEY_TEMP_MOD_PROPERTIES)\
-								.duplicate()
+						"modifier": _retrieve_temp_modifiers(script, "properties")
 					}
 				var retcode = call(script.script_name, script)
 				if retcode is GDScriptFunctionState:
@@ -127,6 +149,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			# At the end of the task run, we loop back to the start, but of course
 			# with one less item in our scripts_queue.
 			cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
+			cfc.card_temp_property_modifiers.erase(self)
 			for card in script.subjects:
 				card.temp_properties_modifiers.erase(self)
 #	print_debug(str(card_owner) + 'Scripting: All done!') # Debug
@@ -141,7 +164,6 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 #					scripts_queue,prev_subjects)
 
 
-
 # Task for rotating cards
 # * Supports [KEY_IS_COST](SP#KEY_IS_COST).
 # * Requires the following keys:
@@ -149,12 +171,14 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 #	* [KEY_DEGREES](SP#KEY_DEGREES)
 func rotate_card(script: ScriptTask) -> int:
 	var retcode: int
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
 		# The last arg is the "check" flag.
 		# Unfortunately Godot does not support passing named vars
 		# (See https://github.com/godotengine/godot-proposals/issues/902)
 		retcode = card.set_card_rotation(script.get_property(SP.KEY_DEGREES),
-				false, true, costs_dry_run())
+				false, true, costs_dry_run(), tags)
 	return(retcode)
 
 
@@ -165,9 +189,11 @@ func rotate_card(script: ScriptTask) -> int:
 #	* [KEY_SET_FACEUP](SP#KEY_SET_FACEUP)
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
 		retcode = card.set_is_faceup(script.get_property(SP.KEY_SET_FACEUP),
-				false,costs_dry_run())
+				false,costs_dry_run(), tags)
 	return(retcode)
 
 
@@ -193,6 +219,8 @@ func view_card(script: ScriptTask) -> int:
 func move_card_to_container(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	if not costs_dry_run():
+		# We inject the tags from the script into the tags sent by the signal
+		var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 		var dest_container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
 		var dest_index = script.get_property(SP.KEY_DEST_INDEX)
 		if str(dest_index) == SP.KEY_SUBJECT_INDEX_V_TOP:
@@ -207,7 +235,7 @@ func move_card_to_container(script: ScriptTask) -> int:
 			# We don't allow to draw more cards than the hand size
 			# But we don't consider it a failed cost (as most games allow you
 			# to try and draw more cards when you're full but just won't draw any)
-			card.move_to(dest_container,dest_index, null, true)
+			card.move_to(dest_container,dest_index, null, tags)
 			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
@@ -225,6 +253,8 @@ func move_card_to_container(script: ScriptTask) -> int:
 func move_card_to_board(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	if grid_name:
 		var grid: BoardPlacementGrid
 		var slot: BoardPlacementSlot
@@ -245,7 +275,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 					if slot:
 						# Setting the highlight lets the move_to() method
 						# Know we're moving into that slot
-						card.move_to(cfc.NMAP.board, -1, slot, true)
+						card.move_to(cfc.NMAP.board, -1, slot, tags)
 		else:
 			# If the named grid  was not found, we inform the developer.
 			print_debug("WARNING: Script from card '"
@@ -263,7 +293,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 			count += 1
 			# We assume cards moving to board want to be face-up
 			if not costs_dry_run():
-				card.move_to(cfc.NMAP.board, -1, board_position)
+				card.move_to(cfc.NMAP.board, -1, board_position, tags)
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
@@ -282,8 +312,12 @@ func mod_tokens(script: ScriptTask) -> int:
 	var modification: int
 	var alteration = 0
 	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			modification *= -1
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
@@ -300,9 +334,29 @@ func mod_tokens(script: ScriptTask) -> int:
 		alteration = _check_for_alterants(script, modification)
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
+	var token_diff := 0
 	for card in script.subjects:
+		var current_tokens: int
+		# If we're storing the integer, we want to store the difference
+		# cumulative difference between the current and modified tokens
+		# among all the cards
+		# If if se set tokens to 1, and one card had 3 tokens,
+		# while another had 0
+		# The total stored integer would be -1
+		# This allows us to do an effect like
+		# Remove all Poison tokens from all cards, draw a card for each token removed.
+		if script.get_property(SP.KEY_STORE_INTEGER):
+			current_tokens = card.tokens.get_token(token_name).get_count()
+			if set_to_mod:
+				token_diff += modification + alteration - current_tokens
+			elif current_tokens + modification + alteration < 0:
+				token_diff += -current_tokens
+			else:
+				token_diff = modification + alteration
 		retcode = card.tokens.mod_token(token_name,
-				modification + alteration,set_to_mod,costs_dry_run())
+				modification + alteration,set_to_mod,costs_dry_run(), tags)
+	if script.get_property(SP.KEY_STORE_INTEGER):
+		stored_integer = token_diff
 	return(retcode)
 
 
@@ -319,10 +373,12 @@ func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
 	var alteration = 0
-	var card_scene: String = script.get_property(SP.KEY_SCENE_PATH)
+	var card_name: String = script.get_property(SP.KEY_CARD_NAME)
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			count *= -1
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_OBJECT_COUNT),
@@ -346,7 +402,7 @@ func spawn_card(script: ScriptTask) -> void:
 				# We need a small delay, to allow a potential new slot to instance
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 				if slot:
-					card = load(card_scene).instance()
+					card = cfc.instance_card(card_name)
 					cfc.NMAP.board.add_child(card)
 					card.position = slot.rect_global_position
 					card._placement_slot = slot
@@ -354,7 +410,7 @@ func spawn_card(script: ScriptTask) -> void:
 					card.state = Card.CardState.ON_PLAY_BOARD
 	else:
 		for iter in range(count + alteration):
-			card = load(card_scene).instance()
+			card = cfc.instance_card(card_name)
 			var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
 			cfc.NMAP.board.add_child(card)
 			card.position = board_position
@@ -377,8 +433,10 @@ func shuffle_container(script: ScriptTask) -> void:
 # * Requires the following keys:
 #	* [KEY_SUBJECT](SP#KEY_SUBJECT)
 func attach_to_card(script: ScriptTask) -> void:
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
-		script.owner_card.attach_to_host(card)
+		script.owner_card.attach_to_host(card, false, tags)
 
 
 # Task from making the subject card an attachment to the owner card.
@@ -387,7 +445,9 @@ func attach_to_card(script: ScriptTask) -> void:
 func host_card(script: ScriptTask) -> void:
 	# host_card can only ever use one subject
 	var card: Card = script.subjects[0]
-	card.attach_to_host(script.owner_card)
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
+	card.attach_to_host(script.owner_card, false, tags)
 
 
 # Task for modifying a card's properties
@@ -396,14 +456,16 @@ func host_card(script: ScriptTask) -> void:
 #	* [KEY_MODIFY_PROPERTIES](SP#KEY_MODIFY_PROPERTIES)
 func modify_properties(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.OK
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
 		var properties = script.get_property(SP.KEY_MODIFY_PROPERTIES)
 		for property in properties:
 			var ret_once = card.modify_property(
 					property,
 					properties[property],
-					false,
-					costs_dry_run())
+					costs_dry_run(),
+					tags)
 			if ret_once == CFConst.ReturnCode.FAILED:
 				retcode = ret_once
 			elif ret_once == CFConst.ReturnCode.CHANGED\
@@ -449,6 +511,8 @@ func add_grid(script: ScriptTask) -> void:
 	var grid_scene: String = script.get_property(SP.KEY_SCENE_PATH)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			count *= -1
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	for iter in range(count):
@@ -481,8 +545,14 @@ func mod_counter(script: ScriptTask) -> int:
 	var counter_name: String = script.get_property(SP.KEY_COUNTER_NAME)
 	var modification: int
 	var alteration = 0
+	# We inject the tags from the script into the tags sent by the signal
+	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
+		# If the modification is requested, is only applies to stored integers
+		# so we flip the stored_integer's value.
 		modification = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			modification *= -1
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
@@ -494,17 +564,26 @@ func mod_counter(script: ScriptTask) -> int:
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
-	# We do not not modify
 	if not set_to_mod:
 		alteration = _check_for_alterants(script, modification)
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
+	if script.get_property(SP.KEY_STORE_INTEGER):
+		var current_count = cfc.NMAP.board.counters.get_counter(
+				counter_name, script.owner_card)
+		if set_to_mod:
+			stored_integer = modification + alteration - current_count
+		elif current_count + modification + alteration < 0:
+			stored_integer = -current_count
+		else:
+			stored_integer = modification + alteration
 	var retcode: int = cfc.NMAP.board.counters.mod_counter(
 			counter_name,
 			modification + alteration,
 			set_to_mod,
 			costs_dry_run(),
-			script.owner_card)
+			script.owner_card,
+			tags)
 	return(retcode)
 
 
@@ -560,3 +639,18 @@ func _check_for_alterants(script: ScriptTask, value: int) -> int:
 		alteration = yield(alteration, "completed")
 	return(alteration.value_alteration)
 
+
+func _retrieve_temp_modifiers(script: ScriptTask, type: String) -> Dictionary:
+	var temp_modifiers: Dictionary
+	if type == "properties":
+		temp_modifiers = script.get_property(
+				SP.KEY_TEMP_MOD_PROPERTIES).duplicate()
+	else:
+		temp_modifiers = script.get_property(
+				SP.KEY_TEMP_MOD_COUNTERS).duplicate()
+	for value in temp_modifiers:
+		if str(temp_modifiers[value]) == SP.VALUE_RETRIEVE_INTEGER:
+			temp_modifiers[value] = stored_integer
+			if script.get_property(SP.KEY_IS_INVERTED):
+				temp_modifiers[value] *= -1
+	return(temp_modifiers)

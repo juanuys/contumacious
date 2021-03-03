@@ -69,28 +69,6 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			for c in subjects_array:
 				if not SP.check_validity(c, script_definition, "subject"):
 					is_valid = false
-			# If we have requested to use the previous target,
-			# but the subject_array is empty, we check if there's a dry
-			# run target available and try to use that instead.
-			# This allows a "previous" subject task, to be placed before
-			# the task which requires a target, as long as the targetting task
-			# is_cost.
-			# This is useful for example, when the targeting task would move
-			# The subject to another pile but we want to check (#SUBJECT_PARENT)
-			# against the parent it had before it moved.
-			if subjects_array.empty():
-				if owner_card.targeting_arrow.target_dry_run_card\
-						and SP.check_validity(
-						owner_card.targeting_arrow.target_dry_run_card,
-						script_definition,
-						"subject"):
-					# Unlike the KEY_SUBJECT_V_TARGET, using the
-					# dry_run_card with the KEY_SUBJECT_V_PREVIOUS value
-					# does not clear the target_dry_run_card value
-					subjects_array.append(
-							owner_card.targeting_arrow.target_dry_run_card)
-				else:
-					is_valid = false
 		SP.KEY_SUBJECT_V_TARGET:
 			var c = _initiate_card_targeting()
 			if c is GDScriptFunctionState: # Still working.
@@ -120,6 +98,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			# stored from the previous ask_integer task.
 			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
 				subject_count = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					subject_count *= -1
 			requested_subjects = subject_count
 			for c in cfc.NMAP.board.get_all_cards():
 				if SP.check_validity(c, script_definition, "seek"):
@@ -143,6 +123,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				subject_count = -1
 			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
 				subject_count = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					subject_count *= -1
 			requested_subjects = subject_count
 			for c in get_property(SP.KEY_SRC_CONTAINER).get_all_cards():
 				if SP.check_validity(c, script_definition, "tutor"):
@@ -168,6 +150,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				index = src_container.get_card_index(src_container.get_random_card())
 			elif str(index) == SP.VALUE_RETRIEVE_INTEGER:
 				index = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					index *= -1
 			# Just to prevent typos since we don't enforce integers on index
 			elif not str(index).is_valid_integer():
 				index = 0
@@ -193,6 +177,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				subject_count = src_container.get_card_count() - adjust_count
 			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
 				subject_count = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					subject_count *= -1
 			requested_subjects = subject_count
 			# If KEY_SUBJECT_COUNT is more than 1, we seek a number
 			# of cards from this index equal to the amount
@@ -213,7 +199,10 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 					subjects_array.append(src_container.get_card(index - iter))
 			if requested_subjects > 0\
 					and subjects_array.size() < requested_subjects:
-				is_valid = false
+				if get_property(SP.KEY_IS_COST):
+					is_valid = false
+				else:
+					requested_subjects = subjects_array.size()
 		SP.KEY_SUBJECT_V_TRIGGER:
 			# We check, just to make sure we didn't mess up
 			if trigger_card:
@@ -256,7 +245,6 @@ static func count_per(
 			script_owner: Card,
 			per_definitions: Dictionary,
 			_trigger_card = null) -> int:
-	var found_things := 0
 	var per_msg := perMessage.new(
 			per_seek,
 			script_owner,

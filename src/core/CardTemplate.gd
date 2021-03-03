@@ -380,7 +380,9 @@ func _on_Card_gui_input(event) -> void:
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
 			if event.doubleclick\
-					and check_play_costs() != CFConst.CostsState.IMPOSSIBLE:
+					and ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE
+					and get_state_exec() == "hand")
+					or get_state_exec() == "board"):
 				cfc.card_drag_ongoing = null
 				execute_scripts()
 			# If it's a long click it might be because
@@ -436,11 +438,6 @@ func _on_Card_gui_input(event) -> void:
 						potential_container.highlight.set_highlight(false)
 					move_to(destination)
 					_focus_completed = false
-					#emit_signal("card_dropped",self)
-		elif event.is_pressed() and event.get_button_index() == 2:
-			targeting_arrow.initiate_targeting()
-		elif not event.is_pressed() and event.get_button_index() == 2:
-			targeting_arrow.complete_targeting()
 
 
 # Triggers the focus-out effect on the card
@@ -475,10 +472,18 @@ func setup() -> void:
 	# card_name needs to be setup before we call this function
 	set_card_name(card_name)
 	# The properties of the card should be already stored in cfc
-	var read_properties = cfc.card_definitions.get(card_name, {})
+	var read_properties: Dictionary
+	if state != CardState.VIEWPORT_FOCUS:
+		read_properties = cfc.card_definitions.get(card_name, {})
+	else:
+		read_properties = properties.duplicate()
 	for property in read_properties.keys():
 		# warning-ignore:return_value_discarded
-		modify_property(property,read_properties[property], true)
+		modify_property(
+				property,
+				read_properties[property],
+				false,
+				["Init"])
 
 
 # Changes the property stored in the properties dictionary of this card
@@ -488,12 +493,20 @@ func setup() -> void:
 # If the property is a number, and the value is a string integer with the
 # operator in front (e.g. "+4", "-1" etc), then instead of setting the property
 # it will be instead modified by that amount.
-func modify_property(property: String, value, is_init = false, check := false) -> int:
+func modify_property(
+			property: String,
+			value,
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode: int
+	var is_init := false
+	if "Init" in tags:
+		is_init = true
 	if not property in properties.keys() and not is_init:
 		retcode = CFConst.ReturnCode.FAILED
 	elif typeof(properties.get(property)) == typeof(value)\
-			and properties.get(property) == value:
+			and properties.get(property) == value\
+			and not is_init:
 		retcode = CFConst.ReturnCode.OK
 	elif typeof(properties.get(property)) != typeof(value)\
 			and str(properties.get(property)) == str(value):
@@ -522,9 +535,7 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			if properties.get(property) == null\
 					or typeof(properties.get(property)) == typeof(value):
 				properties[property] = value
-				
-			var lbls = card_front.card_labels
-			if not lbls.has(property):
+			if not card_front.card_labels.has(property):
 				if not property.begins_with("_"):
 					print_debug("Warning: ", property,
 							" does not have a matching label!")
@@ -532,11 +543,17 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			else:
 				var label_node = card_front.card_labels[property]
 				if not is_init:
-					emit_signal("card_properties_modified",
-							self, "card_properties_modified",
-							{"property_name": property,
-							"new_property_value": value,
-							"previous_property_value": previous_value})
+					emit_signal(
+							"card_properties_modified",
+							self,
+							"card_properties_modified",
+							{
+								"property_name": property,
+								"new_property_value": value,
+								"previous_property_value": previous_value,
+								"tags": tags
+							}
+					)
 				# These are int or float properties which need to be converted
 				# to a string with some formatting.
 				#
@@ -549,16 +566,21 @@ func modify_property(property: String, value, is_init = false, check := false) -
 					if typeof(value) == TYPE_STRING:
 						if '+' in value or '-' in value:
 							properties[property] += int(value)
-							card_front.set_label_text(label_node,property
-									+ ": " + str(previous_value + int(value)))
+							if property in CardConfig.NUMBER_WITH_LABEL:
+								card_front.set_label_text(label_node,property
+										+ ": " + str(previous_value + int(value)))
+							else:
+								card_front.set_label_text(label_node,str(value))
 						else:
 							print_debug("WARNING: Tried to assign " + value
 									+ " to numerical property:" + property)
 					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")
-					else:
+					elif property in CardConfig.NUMBER_WITH_LABEL:
 						card_front.set_label_text(label_node,property
 								+ ": " + str(value))
+					else:
+						card_front.set_label_text(label_node,str(value))
 				# These are arrays of properties which are put in a label
 				# with a simple join character
 				elif property in CardConfig.PROPERTIES_ARRAYS:
@@ -592,7 +614,8 @@ func get_property(property: String):
 # * alteration: The  full dictionary returned by
 #	CFScriptUtils.get_altered_value() but including details about
 #	temp_properties_modifiers
-func get_property_and_alterants(property: String) -> Dictionary:
+func get_property_and_alterants(property: String,
+		use_global_temp_mods := false) -> Dictionary:
 	var property_value = properties.get(property)
 	var alteration = {
 		"value_alteration": 0,
@@ -603,7 +626,19 @@ func get_property_and_alterants(property: String) -> Dictionary:
 		"modifier_details": {}
 	}
 	if property in CardConfig.PROPERTIES_NUMBERS:
-		for modifiers_dict in temp_properties_modifiers.values():
+		var tmp_mods : Dictionary
+		# The global card modifications record in cfc is not typically used
+		# A game will have to be setup to explicitly request its use in this
+		# method. This would be needed for example when calculating the
+		# effect a temp_modifier would have on a card subject, before
+		# a subject was selected.
+		if use_global_temp_mods\
+				and temp_properties_modifiers.empty()\
+				and not cfc.card_temp_property_modifiers.empty():
+			tmp_mods = cfc.card_temp_property_modifiers
+		else:
+			tmp_mods = temp_properties_modifiers
+		for modifiers_dict in tmp_mods.values():
 			temp_modifiers.value_modification += \
 					modifiers_dict.modifier.get(property,0)
 			# Each value in the modifier_details dictionary is another dictionary
@@ -668,7 +703,11 @@ func get_is_attachment() -> bool:
 #
 # * Returns CFConst.ReturnCode.CHANGED if the card actually changed rotation
 # * Returns CFConst.ReturnCode.OK if the card was already in the correct rotation
-func set_is_faceup(value: bool, instant := false, check := false) -> int:
+func set_is_faceup(
+			value: bool,
+			instant := false,
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode: int
 	if value == is_faceup:
 		retcode = CFConst.ReturnCode.OK
@@ -720,7 +759,14 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = CFConst.ReturnCode.CHANGED
-		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
+		emit_signal(
+				"card_flipped",
+				self,
+				"card_flipped",
+				{
+					"is_faceup": value,
+					"tags": tags,
+				})
 	# If we're doing a check, then we just report CHANGED.
 	else:
 		retcode = CFConst.ReturnCode.CHANGED
@@ -820,7 +866,12 @@ func set_name(value : String) -> void:
 # * Returns CFConst.ReturnCode.CHANGED if the card actually changed rotation.
 # * Returns CFConst.ReturnCode.OK if the card was already in the correct rotation.
 # * Returns CFConst.ReturnCode.FAILED if an invalid rotation was specified.
-func set_card_rotation(value: int, toggle := false, start_tween := true, check := false) -> int:
+func set_card_rotation(
+			value: int,
+			toggle := false,
+			start_tween := true,
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
 	# If it's not, we consider the request failed
@@ -874,7 +925,14 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			#$Control/Tokens.rotation_degrees = -value # need to figure this out
 			# When the card actually changes orientation
 			# We report that it changed.
-			emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
+			emit_signal(
+					"card_rotated", self,
+					"card_rotated",
+					{
+						"degrees": value,
+						"tags": tags,
+					}
+			)
 
 		retcode = CFConst.ReturnCode.CHANGED
 	return retcode
@@ -905,7 +963,7 @@ func get_potential_placement_slot() -> BoardPlacementSlot:
 func move_to(targetHost: Node,
 		index := -1,
 		board_position = null,
-		scripted_move = false) -> void:
+		tags := ["Manual"]) -> void:
 #	if cfc.game_settings.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -920,7 +978,7 @@ func move_to(targetHost: Node,
 	# if the placement to the board requested is invalid
 	# depending on the board_placement variable
 	targetHost = targetHost.get_final_placement_node(self)
-	targetHost = common_pre_move_scripts(targetHost, parentHost, scripted_move)
+	targetHost = common_pre_move_scripts(targetHost, parentHost, tags)
 	if targetHost == cfc.NMAP.board and not board_position:
 		match board_placement:
 			BoardPlacement.NONE:
@@ -995,7 +1053,12 @@ func move_to(targetHost: Node,
 			emit_signal("card_moved_to_hand",
 					self,
 					"card_moved_to_hand",
-					 {"destination": targetHost, "source": parentHost})
+					 {
+						"destination": targetHost,
+						"source": parentHost,
+						"tags": tags
+					}
+			)
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -1030,7 +1093,12 @@ func move_to(targetHost: Node,
 				emit_signal("card_moved_to_pile",
 						self,
 						"card_moved_to_pile",
-						{"destination": targetHost, "source": parentHost})
+						{
+							"destination": targetHost,
+							"source": parentHost,
+							"tags": tags
+						}
+				)
 				# We start the flipping animation here, even though it also
 				# set in the card state, because we want to see it while the
 				# card is moving to the CardContainer
@@ -1069,7 +1137,12 @@ func move_to(targetHost: Node,
 			emit_signal("card_moved_to_board",
 					self,
 					"card_moved_to_board",
-					{"destination": targetHost, "source": parentHost})
+					 {
+						"destination": targetHost,
+						"source": parentHost,
+						"tags": tags
+					}
+			)
 		if parentHost and parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -1143,7 +1216,7 @@ func move_to(targetHost: Node,
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
-	common_post_move_scripts(targetHost, parentHost, scripted_move)
+	common_post_move_scripts(targetHost, parentHost, tags)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1245,8 +1318,6 @@ func execute_scripts(
 		elif not sceng.can_all_costs_be_paid and not only_cost_check:
 			#print("DEBUG:" + str(state_scripts))
 			sceng.execute(CFInt.RunType.ELSE)
-		else:
-			targeting_arrow.target_dry_run_card = null
 	return(sceng)
 
 
@@ -1293,16 +1364,25 @@ func get_state_exec() -> String:
 				CardState.FOCUSED_IN_HAND,\
 				CardState.REORGANIZING,\
 				CardState.PUSHED_ASIDE:
+			state_exec = "hand"
+		CardState.IN_POPUP,\
+				CardState.FOCUSED_IN_POPUP,\
+				CardState.IN_PILE,\
+				CardState.VIEWED_IN_PILE:
+			state_exec = "pile"
+		CardState.MOVING_TO_CONTAINER:
+			if get_parent() == cfc.NMAP.hand:
 				state_exec = "hand"
-		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP,\
-				 CardState.IN_PILE,\
-				 CardState.VIEWED_IN_PILE:
+			else:
 				state_exec = "pile"
 	return(state_exec)
 
 
 # Handles the card becoming an attachment for a specified host Card object
-func attach_to_host(host: Card, is_following_previous_host = false) -> void:
+func attach_to_host(
+			host: Card,
+			is_following_previous_host = false,
+			tags := ["Manual"]) -> void:
 	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
@@ -1320,7 +1400,7 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 			emit_signal("card_unattached",
 					self,
 					"card_unattached",
-					{"host": current_host_card})
+					{"host": current_host_card, "tags": tags})
 		# If card was on a grid slot, we clear that occupation
 		if _placement_slot:
 			_placement_slot.occupying_card = null
@@ -1351,7 +1431,7 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 		emit_signal("card_attached",
 				self,
 				"card_attached",
-				{"host": host})
+				{"host": host, "tags": tags})
 
 
 # Overrides the built-in get_class to
@@ -1556,7 +1636,7 @@ func check_play_costs() -> Color:
 # to instead be redirected to a pile.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_pre_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> Node:
+func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -> Node:
 	return(new_host)
 
 # This function can be overriden by any class extending Card, in order to provide
@@ -1568,7 +1648,8 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, scripted_move: bool
 # places on the table.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_post_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> void:
+# warning-ignore:unused_argument
+func common_post_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -> void:
 	pass
 
 
@@ -1743,12 +1824,12 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 
 # Clears all attachment/hosting status.
 # It is typically called when a card is removed from the table
-func _clear_attachment_status() -> void:
+func _clear_attachment_status(tags := ["Manual"]) -> void:
 	if current_host_card:
 		emit_signal("card_unattached",
 				self,
 				"card_unattached",
-				{"host": current_host_card})
+				{"host": current_host_card, "tags": tags})
 		current_host_card.attachments.erase(self)
 		current_host_card = null
 	for card in attachments:
@@ -2102,7 +2183,6 @@ func _process_card_state() -> void:
 			# because if the player drags the cursor outside the window and unclicks
 			# The control will not receive the mouse input
 			# and this will stay dragging forever
-
 			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
 			# We set the card to be centered on the mouse cursor to allow
 			# the player to properly understand where it will go once dropped.
@@ -2234,7 +2314,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
-			scale = Vector2(1.5,1.5)
+			scale = Vector2(2,2)
 
 
 
@@ -2281,11 +2361,15 @@ func _get_oval_angle_by_index(
 	var card_angle
 	if angle == 90:
 		card_angle = 90
+	# Convert oval angle to normal angle
 	else:
-		# Convert oval angle to normal angle
-		card_angle= rad2deg(atan(- ver_rad / hor_rad / tan(deg2rad(angle))))
-		card_angle = card_angle + 90
-	return card_angle
+		# To avoid div/0
+		if hor_rad == 0:
+			card_angle = 90
+		else:
+			card_angle = rad2deg(atan(- ver_rad / hor_rad / tan(deg2rad(angle))))
+			card_angle = card_angle + 90
+	return(card_angle)
 
 
 # Calculate the position after the rotation has been calculated that use oval shape
@@ -2400,5 +2484,4 @@ func _on_Back_resized() -> void:
 	# At the loop at line 91, is active
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
-#		print_debug($Control/Back.rect_size) # Replace with function body.
 

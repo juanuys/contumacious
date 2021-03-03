@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/elbow-bump.png-891c2474ea08d5e86992bcdad0e98a40.stex"
+path="res://.import/Elbow Bump.png-d8fc9bcd3db181f69df77c257949ce59.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cards/elbow-bump.png"
-dest_files=[ "res://.import/elbow-bump.png-891c2474ea08d5e86992bcdad0e98a40.stex" ]
+source_file="res://assets/cards/Elbow Bump.png"
+dest_files=[ "res://.import/Elbow Bump.png-d8fc9bcd3db181f69df77c257949ce59.stex" ]
 
 [params]
 

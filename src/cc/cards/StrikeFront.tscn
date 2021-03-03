@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/cc/CardFront.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/cc/cards/StrikeFront.gd" type="Script" id=2]
-[ext_resource path="res://assets/cards/elbow-bump3.png" type="Texture" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 1, 1, 0.980392, 1 )
@@ -14,9 +13,6 @@ corner_radius_bottom_left = 10
 [node name="StrikeFront" instance=ExtResource( 1 )]
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
-
-[node name="Face" parent="." index="0"]
-texture = ExtResource( 3 )
 
 [node name="Name" parent="Margin/CardText" index="0"]
 text = "Generic Strike"
@@ -32,3 +28,15 @@ text = ""
 
 [node name="Abilities" parent="Margin/CardText" index="4"]
 text = "Whammo!"
+
+[node name="HB" parent="Margin/CardText" index="5"]
+margin_top = 214.0
+margin_bottom = 238.0
+
+[node name="Cost" parent="Margin/CardText/HB" index="0"]
+margin_top = 3.0
+margin_bottom = 21.0
+
+[node name="Power" parent="Margin/CardText/HB" index="1"]
+margin_top = 3.0
+margin_bottom = 21.0

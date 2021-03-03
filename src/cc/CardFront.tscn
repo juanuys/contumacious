@@ -64,10 +64,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Face" type="Sprite" parent="."]
-position = Vector2( 85, 77.308 )
-scale = Vector2( 0.208961, 0.208961 )
+[node name="Art" type="TextureRect" parent="."]
+margin_top = 18.0
+margin_right = 171.0
+margin_bottom = 134.0
+rect_min_size = Vector2( 171, 116 )
 texture = ExtResource( 3 )
+expand = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Margin" type="MarginContainer" parent="."]
 anchor_right = 1.0

@@ -1,28 +1,31 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://src/cc/Hand.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/custom/CGFHand.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/cc/Deck.gd" type="Script" id=4]
 [ext_resource path="res://src/cc/Board.gd" type="Script" id=5]
-[ext_resource path="res://src/custom/CGFCounters.tscn" type="PackedScene" id=6]
-[ext_resource path="res://src/custom/CGFPlacementGridDemo.tscn" type="PackedScene" id=7]
-[ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
+[ext_resource path="res://src/cc/Counter.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/cc/Counters.tscn" type="PackedScene" id=7]
+[ext_resource path="res://src/cc/Counters.gd" type="Script" id=8]
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
 [ext_resource path="res://src/core/DeckBuilder/DeckBuilder.tscn" type="PackedScene" id=10]
 [ext_resource path="res://src/cc/Discard.gd" type="Script" id=11]
 [ext_resource path="res://assets/backgrounds/train-interior.png" type="Texture" id=12]
 [ext_resource path="res://assets/characters/npc.png" type="Texture" id=13]
-[ext_resource path="res://assets/characters/avatar.png" type="Texture" id=14]
+[ext_resource path="res://src/battle/Battler.tscn" type="PackedScene" id=14]
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 76.5732, 183.822 )
+
+[sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=3]
 size = 14
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
@@ -30,27 +33,36 @@ use_filter = true
 font_data = ExtResource( 9 )
 
 [node name="Board" type="Control"]
+anchor_top = 0.00138733
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 1.00139
 mouse_filter = 2
 script = ExtResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="DeleteMe" type="Area2D" parent="."]
+position = Vector2( 1222.62, 500.435 )
+z_index = 1
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="DeleteMe"]
+scale = Vector2( 0.3, 0.3 )
+texture = ExtResource( 13 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeleteMe"]
+shape = SubResource( 1 )
+
+[node name="Battler" parent="." instance=ExtResource( 14 )]
+position = Vector2( 600, 500 )
+scale = Vector2( 0.3, 0.3 )
+
 [node name="Background" type="Sprite" parent="."]
 position = Vector2( 960, 540 )
 texture = ExtResource( 12 )
-
-[node name="avatar" type="Sprite" parent="."]
-position = Vector2( 785.318, 494.585 )
-scale = Vector2( 0.310345, 0.310345 )
-texture = ExtResource( 14 )
-
-[node name="npc" type="Sprite" parent="."]
-position = Vector2( 1149.32, 511.172 )
-scale = Vector2( 0.310345, 0.310345 )
-texture = ExtResource( 13 )
 
 [node name="Deck" parent="." instance=ExtResource( 2 )]
 position = Vector2( 0, 475 )
@@ -66,15 +78,22 @@ pile_name = "Discard"
 faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 2 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
 script = ExtResource( 1 )
+placement = 7
+excess_discard_pile_name = "discard"
 
-[node name="Counters" parent="." instance=ExtResource( 6 )]
-margin_top = 205.0
-margin_bottom = 219.0
+[node name="Counters" parent="." instance=ExtResource( 7 )]
+visible = false
+margin_left = 21.402
+margin_top = 212.953
+margin_right = 61.402
+margin_bottom = 226.953
+script = ExtResource( 8 )
+counter_scene = ExtResource( 6 )
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
 visible = false
@@ -166,27 +185,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlacementGridDemo" parent="." instance=ExtResource( 7 )]
-visible = false
-margin_left = 775.0
-margin_top = 240.0
-margin_right = 1274.0
-margin_bottom = 436.0
-highlight = Color( 0.985156, 0, 1.3, 1.3 )
-
-[node name="ModifiedLabelGrid" parent="." instance=ExtResource( 8 )]
-visible = false
-margin_left = 1015.0
-margin_top = 30.0
-margin_right = 1264.0
-margin_bottom = 226.0
-
 [node name="SeedLabel" type="Label" parent="."]
 margin_left = 10.0
 margin_top = 175.0
 margin_right = 265.0
 margin_bottom = 200.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Game Seed is: "
 __meta__ = {
 "_edit_use_anchors_": false
@@ -202,6 +206,11 @@ margin_left = 4.0
 margin_top = 4.0
 margin_right = -4.0
 margin_bottom = -4.0
+
+[node name="Label" type="Label" parent="."]
+margin_right = 40.0
+margin_bottom = 14.0
+text = "v0.1"
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]

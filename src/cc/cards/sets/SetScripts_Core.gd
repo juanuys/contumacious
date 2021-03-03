@@ -6,41 +6,22 @@ extends Reference
 # if no scripts have been defined, an empty dictionary is returned instead.
 func get_scripts(card_name: String) -> Dictionary:
 	var scripts := {
-		"Test Card 1": {
-			"manual": {
-				"board": [
-					{
-						"name": "rotate_card",
-						"subject": "self",
-						"degrees": 90,
-					}
-				],
+		"Elbow Bump": {
+			"card_moved_to_board": {
 				"hand": [
 					{
-						"name": "spawn_card",
-						"scene_path": CFConst.PATH_CUSTOM + "CGFCardTemplate.tscn",
-						"board_position": Vector2(500,200),
+						"name": "custom_script",
+						#"subject": "target",
 					}
 				]
 			},
 		},
-		"Test Card 2": {
-			"manual": {
-				"board": [
-					{
-						"name": "move_card_to_container",
-						"subject": "target",
-						"dest_container": cfc.NMAP.discard,
-					},
-					{
-						"name": "move_card_to_container",
-						"subject": "self",
-						"dest_container": cfc.NMAP.discard,
-					}
-				],
+		"Knee Bump": {
+			"card_moved_to_board": {
 				"hand": [
 					{
 						"name": "custom_script",
+						#"subject": "target",
 					}
 				]
 			},

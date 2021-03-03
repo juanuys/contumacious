@@ -12,3 +12,11 @@ Design documents and throw-away prototypes and experiments live in a [separate r
 
 Built on [godot-card-game-framework](https://github.com/db0/godot-card-game-framework).
 
+# Build
+
+```
+mkdir tmp
+godot --export HTML5 tmp/index.html
+cd tmp
+python3 -m http.server
+```

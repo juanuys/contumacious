@@ -88,7 +88,7 @@ func load_test_cards(extras := 11) -> void:
 			test_card_array.append(cfc.instance_card(random_card_name))
 	# 11 is the cards GUT expects. It's the testing standard
 	if extras == 11:
-	# I ensure there's of each test card, for use in GUT
+		# I ensure there's of each test card, for use in GUT
 		for card_name in test_cards:
 			test_card_array.append(cfc.instance_card(card_name))
 	for card in test_card_array:

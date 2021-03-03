@@ -1,0 +1,35 @@
+name: Build and deploy to itch.io
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish-godot-game-to-itchio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        id: checkout
+        uses: actions/checkout@v2
+      - name: build
+        id: build
+        uses: josephbmanley/build-godot-action@master
+        with:
+          name: index.html
+          preset: HTML5
+      - run: ls -la build
+      - run: echo "${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}-${GITHUB_SHA}" > VERSION_FILE
+      - uses: montudor/action-zip@v0.1.1
+        with:
+          args: zip -qq -r -j build.zip build
+      - name: publish
+        id: publish
+        uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: web
+          ITCH_GAME: contumacious-commuter
+          ITCH_USER: opyate
+          PACKAGE: build.zip
+          VERSION_FILE: VERSION_FILE

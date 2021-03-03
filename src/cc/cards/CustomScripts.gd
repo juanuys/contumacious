@@ -21,21 +21,17 @@ func custom_script(script: ScriptObject) -> void:
 	# I don't like the extra indent caused by this if, 
 	# But not all object will be Card
 	# So I can't be certain the "card_name" var will exist
+	print_debug("custom script?")
 	match script.owner_card.card_name:
-		"Test Card 2":
+		"Elbow Bump":
 			# No demo cost-based custom scripts
+			print_debug("ELBOW CUMP")
 			if not costs_dry_run:
-				print("This is a custom script execution.")
-				print("Look! I am going to destroy myself now!")
-				card.queue_free()
-				print("You can do whatever you want here.")
-		"Test Card 3":
+				print_debug("ELBOW CUMP!")
+		"Knee Bump":
+			print_debug("KNEE CUMP")
 			if not costs_dry_run:
-				print("This custom script uses the _find_subject()"
-						+ " to find a convenient target")
-				for subject in subjects:
-					subjects[0].queue_free()
-					print("Destroying: " + subjects[0].card_name)
+				print_debug("KNEE CUMP!")
 
 func custom_alterants(script: ScriptObject) -> int:
 	var alteration := 0

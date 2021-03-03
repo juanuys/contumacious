@@ -28,34 +28,42 @@ static func shuffle_array(array: Array) -> void:
 
 # Mapping randi function
 static func randi() -> int:
-	return cfc.game_rng.randi()
+	return(cfc.game_rng.randi())
 
 # Mapping randf function
 static func randf() -> float:
-	return cfc.game_rng.randf()
+	return(cfc.game_rng.randf())
 
 # Mapping randi_range function
 static func randi_range(from: int, to: int) -> int:
-	return cfc.game_rng.randi_range(from, to)
+	return(cfc.game_rng.randi_range(from, to))
 
 # Mapping randf_range function
 static func randf_range(from: float, to: float) -> float:
-	return cfc.game_rng.randf_range(from, to)
+	return(cfc.game_rng.randf_range(from, to))
 
+# Returns a random boolean
+static func rand_bool() -> bool:
+	var rnd_bool = {0:true, 1: false}
+	return(rnd_bool[randi_range(0,1)])
 
 # Returns a string of all elements in the array, separared by the
 # provided separator
 static func array_join(arr: Array, separator = "") -> String:
-	var output = "";
+	var output : String = ""
 	for s in arr:
 		output += str(s) + separator
-	output = output.left( output.length() - separator.length() )
-	return output
+	# Remove the leftover separator
+	output = output.rstrip(separator)
+	return(output)
 
 
 # Returns a an array of all files in a specific directory.
 # If a prepend_needed String is passed, only returns files
 # which start with that string.
+#
+# **NOTE:** This will not work for images when exported.
+# use list_imported_in_directory() instead
 static func list_files_in_directory(path: String, prepend_needed := "") -> Array:
 	var files := []
 	var dir := Directory.new()
@@ -74,7 +82,29 @@ static func list_files_in_directory(path: String, prepend_needed := "") -> Array
 				and not file.ends_with(".md"):
 			files.append(file)
 	dir.list_dir_end()
-	return files
+	return(files)
+
+
+# Returns a an array of all images in a specific directory.
+#
+# Due to the way Godot exports work, we cannot look for image
+# Files. Instead we have to explicitly look for their .import
+# filenames, and grab the filename from there.
+static func list_imported_in_directory(path: String) -> Array:
+	var files := []
+	var dir := Directory.new()
+	# warning-ignore:return_value_discarded
+	dir.open(path)
+	# warning-ignore:return_value_discarded
+	dir.list_dir_begin()
+	while true:
+		var file := dir.get_next()
+		if file == "":
+			break
+		elif file.ends_with(".import"):
+			files.append(file.rstrip(".import"))
+	dir.list_dir_end()
+	return(files)
 
 
 # Creates a ConfirmationDialog for the player to approve the
@@ -107,7 +137,7 @@ static func sort_index_ascending(c1, c2) -> bool:
 	# further back in the array
 	if c1.get_my_card_index() < c2.get_my_card_index():
 		return true
-	return false
+	return(false)
 
 
 # Used with sort_custom to find the highest child index among multiple cards
