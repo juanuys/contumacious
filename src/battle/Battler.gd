@@ -30,9 +30,32 @@ signal ready_to_act
 # Emitted when the battler's `_readiness` changes.
 signal readiness_changed(new_value)
 
+# Emitted when taking damage.
+# Used to display the number of damage taken
+signal damage_taken(amount)
+# Emitted when a received hit missed.
+# Used to display a "miss" label on the screen.
+signal hit_missed
+
+# Emitted when the battler finished their action and arrived
+# back at their rest position.
+signal action_finished
+
+# Emitted when an animation from `battler_anim` finished playing.
+signal animation_finished(anim_name)
+
+onready var battler_anim: BattlerAnim = $BattlerAnim
+
 
 func _ready() -> void:
-	# stats.reinitialize()
+	# Resources are shared in memory so if you have two monsters of 
+	# the same type on the battlefield, they’re going to reference
+	# the same BattlerStats instance and share health. If we don’t
+	# duplicate the stats resources, when either takes damage, it’s
+	# the same value that goes down.
+	assert(stats is BattlerStats)
+	stats = stats.duplicate()
+	stats.reinitialize()
 	
 	# We connect to the stats' `health_depleted` signal to react to the health reaching `0`.
 	stats.connect("health_depleted", self, "_on_BattlerStats_health_depleted")
@@ -46,8 +69,8 @@ func _process(delta: float) -> void:
 func set_time_scale(value) -> void:
 	time_scale = value
 
-# Setter for the `_readiness` variable. Emits signals when the value changes and when the battler
-# is ready to act.
+# Setter for the `_readiness` variable.
+# Emits signals when the value changes and when the battler is ready to act.
 func _set_readiness(value: float) -> void:
 	_readiness = value
 	emit_signal("readiness_changed", _readiness)
@@ -91,6 +114,9 @@ func set_is_selected(value) -> void:
 
 	is_selected = value
 	emit_signal("selection_toggled", is_selected)
+	if is_selected:
+		battler_anim.move_forward()
+
 
 
 func set_is_selectable(value) -> void:
@@ -106,3 +132,48 @@ func _on_BattlerStats_health_depleted() -> void:
 	# you still want to be able to select them to revive them.
 	if not is_party_member:
 		set_is_selectable(false)
+		# We only play the animation for monsters as
+		# it makes them disappear from the battlefield.
+		battler_anim.queue_animation("die")
+
+# Applies a hit object to the battler, dealing damage or status effects.
+func take_hit(hit: Hit) -> void:
+	# We encapsulated the hit chance in the hit. The hit object tells us if we should take damage.
+	if hit.does_hit():
+		_take_damage(hit.damage)
+		emit_signal("damage_taken", hit.damage)
+	else:
+		emit_signal("hit_missed")
+
+# Applies damage to the battler's stats.
+# Later, it should also trigger a damage animation.
+func _take_damage(amount: int) -> void:
+	stats.health -= amount
+	print("%s took %s damage. Health is now %s." % [name, amount, stats.health])
+	if stats.health > 0:
+		battler_anim.play("take_damage")
+
+# We can't specify the `action`'s type hint here due to cyclic
+# dependency errors in Godot 3.2.
+# But it should be of type `Action` or derived, like `AttackAction`.
+func act(action) -> void:
+	# If the action costs energy, we subtract it.
+	stats.energy -= action.get_energy_cost()
+	# We wait for the action to apply. It's a coroutine, that is to say, an asynchronous function,
+	# so we need to use yield.
+	yield(action.apply_async(), "completed")
+	# We reset the `_readiness`. The value can be greater than zero,
+	# depending on the action.
+	_set_readiness(action.get_readiness_saved())
+	# We shouldn't set process back to `true` if the ...
+	if is_active:
+		set_process(true)
+	# We emit our new signal, indicating the end of a turn for a player-controlled character.
+	emit_signal("action_finished")
+	battler_anim.move_back()
+
+
+
+
+func _on_BattlerAnim_animation_finished(anim_name):
+	emit_signal("animation_finished", anim_name)

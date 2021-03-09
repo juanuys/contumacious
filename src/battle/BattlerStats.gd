@@ -88,6 +88,12 @@ var speed := base_speed
 var hit_chance := base_hit_chance
 var evasion := base_evasion
 
+# An array of elements against which the battler is weak.
+# These weaknesses should be values from our `Types.Elements` enum.
+export var weaknesses := []
+# The battler's elemental affinity. Gives bonuses with related actions.
+export var affinity: int = Types.Elements.NONE
+
 # TODO There are ways to avoid writing these repetitive setter functions
 # or defining separate base and final stats. You’ll find an example in 
 # the course’s appendix at the end of this series. That’s a different 

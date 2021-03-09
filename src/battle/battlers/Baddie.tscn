@@ -10,4 +10,5 @@ script = ExtResource( 1 )
 stats = ExtResource( 3 )
 
 [node name="BattlerAnim" parent="." instance=ExtResource( 2 )]
-[connection signal="animation_finished" from="." to="." method="_on_BattlerAnim_animation_finished"]
+
+[editable path="BattlerAnim"]
