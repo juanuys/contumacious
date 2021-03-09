@@ -10,3 +10,5 @@ script = ExtResource( 1 )
 stats = ExtResource( 3 )
 
 [node name="BattlerAnim" parent="." instance=ExtResource( 2 )]
+
+[editable path="BattlerAnim"]

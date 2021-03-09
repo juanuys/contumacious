@@ -5,21 +5,24 @@ extends Node
 var _party_members := []
 var _opponents := []
 
-# All battlers in the encounter are children of this node. We can get a list of all of them with
-# get_children()
+# All battlers in the encounter are children of this node.
+# We can get a list of all of them with get_children()
 onready var battlers := get_children()
 
 # Allows pausing the Active Time Battle during combat intro, a cutscene, or combat end.
 var is_active := true setget set_is_active
-# Multiplier for the global pace of battle, to slow down time while the player is making decisions.
+# Multiplier for the global pace of battle, to slow down time while
+# the player is making decisions.
 # This is meant for accessibility and to control difficulty.
 var time_scale := 1.0 setget set_time_scale
 
 
 func _ready() -> void:
 	for battler in battlers:
-		# Listen to each battler's ready_to_act signal, binding a reference to the battler to the callback.
+		# Listen to each battler's ready_to_act signal,
+		# binding a reference to the battler to the callback.
 		battler.connect("ready_to_act", self, "_on_Battler_ready_to_act", [battler])
+		# TODO 
 		if battler.is_party_member:
 			_party_members.append(battler)
 		else:
@@ -47,13 +50,13 @@ func _play_turn(battler: Battler) -> void:
 
 	# The code below makes a list of selectable targets using `Battler.is_selectable`
 	var potential_targets := []
-	var opponents := _opponents if battler.is_party_member else _party_members
-	for opponent in opponents:
+	# var opponents := _opponents if battler.is_party_member else _party_members
+	for opponent in _opponents:
 		if opponent.is_selectable:
 			potential_targets.append(opponent)
 
 	if battler.is_player_controlled():
-		# We'll use the selection in the next lesson to move playable battlers
+		# We'll use the selection to move playable battlers
 		# forward. This value will also make the Heads-Up Display (HUD) for this
 		# battler move forward.
 		battler.is_selected = true
@@ -100,6 +103,13 @@ func _play_turn(battler: Battler) -> void:
 		# TODO hard-coded for now
 		action_data = battler.actions[0]
 		targets = [potential_targets[0]]
+	
+	# Create a new attack action based on the chosen `action_data` and `targets`.
+	var action = AttackAction.new(action_data, battler, targets)
+	# And let the battler consume it.
+	battler.act(action)
+	# We wait for the battler's action to finish to complete the function.
+	yield(battler, "action_finished")
 
 func _player_select_action_async(battler: Battler) -> ActionData:
 	# TODO get the played card

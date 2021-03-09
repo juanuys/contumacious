@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://src/cc/Hand.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
@@ -12,20 +12,21 @@
 [ext_resource path="res://src/core/DeckBuilder/DeckBuilder.tscn" type="PackedScene" id=10]
 [ext_resource path="res://src/cc/Discard.gd" type="Script" id=11]
 [ext_resource path="res://assets/backgrounds/train-interior.png" type="Texture" id=12]
-[ext_resource path="res://assets/characters/npc.png" type="Texture" id=13]
-[ext_resource path="res://src/battle/Battler.tscn" type="PackedScene" id=14]
+[ext_resource path="res://src/battle/Combat.tscn" type="PackedScene" id=13]
+[ext_resource path="res://assets/characters/fenyx-paperbg.png" type="Texture" id=14]
+[ext_resource path="res://assets/characters/npc.png" type="Texture" id=15]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 76.5732, 183.822 )
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 283.226, 629.381 )
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=2]
 size = 14
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
@@ -42,27 +43,28 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DeleteMe" type="Area2D" parent="."]
-position = Vector2( 1222.62, 500.435 )
-z_index = 1
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="Sprite" type="Sprite" parent="DeleteMe"]
-scale = Vector2( 0.3, 0.3 )
-texture = ExtResource( 13 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DeleteMe"]
-shape = SubResource( 1 )
-
-[node name="Battler" parent="." instance=ExtResource( 14 )]
-position = Vector2( 600, 500 )
-scale = Vector2( 0.3, 0.3 )
-
 [node name="Background" type="Sprite" parent="."]
 position = Vector2( 960, 540 )
 texture = ExtResource( 12 )
+
+[node name="Combat" parent="." instance=ExtResource( 13 )]
+
+[node name="Baddie" parent="Combat/ActiveTurnQueue" index="0"]
+position = Vector2( 1185.29, 500.018 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="Sprite" parent="Combat/ActiveTurnQueue/Baddie/BattlerAnim/Pivot/Area2D" index="0"]
+texture = ExtResource( 15 )
+
+[node name="CollisionShape2D" parent="Combat/ActiveTurnQueue/Baddie/BattlerAnim/Pivot/Area2D" index="1"]
+shape = SubResource( 3 )
+
+[node name="Protagonist" parent="Combat/ActiveTurnQueue" index="1"]
+position = Vector2( 648, 500 )
+scale = Vector2( 0.2, 0.2 )
+
+[node name="Sprite" parent="Combat/ActiveTurnQueue/Protagonist/BattlerAnim/Pivot/Area2D" index="0"]
+texture = ExtResource( 14 )
 
 [node name="Deck" parent="." instance=ExtResource( 2 )]
 position = Vector2( 0, 475 )
@@ -78,7 +80,7 @@ pile_name = "Discard"
 faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
-custom_styles/panel = SubResource( 2 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
@@ -190,7 +192,7 @@ margin_left = 10.0
 margin_top = 175.0
 margin_right = 265.0
 margin_bottom = 200.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 text = "Game Seed is: "
 __meta__ = {
 "_edit_use_anchors_": false
@@ -219,5 +221,15 @@ text = "v0.1"
 [connection signal="toggled" from="OvalHandToggle" to="." method="_on_OvalHandToggle_toggled"]
 [connection signal="pressed" from="DeckBuilder" to="." method="_on_DeckBuilder_pressed"]
 [connection signal="toggled" from="Debug" to="." method="_on_Debug_toggled"]
+
+[editable path="Combat"]
+
+[editable path="Combat/ActiveTurnQueue/Baddie"]
+
+[editable path="Combat/ActiveTurnQueue/Baddie/BattlerAnim"]
+
+[editable path="Combat/ActiveTurnQueue/Protagonist"]
+
+[editable path="Combat/ActiveTurnQueue/Protagonist/BattlerAnim"]
 
 [editable path="Discard"]
