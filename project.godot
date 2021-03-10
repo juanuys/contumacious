@@ -44,6 +44,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/battle/Battler.gd"
 }, {
+"base": "Node",
+"class": "BattlerAI",
+"language": "GDScript",
+"path": "res://src/battle/ai/BattlerAI.gd"
+}, {
 "base": "Position2D",
 "class": "BattlerAnim",
 "language": "GDScript",
@@ -312,6 +317,7 @@ _global_script_class_icons={
 "AttackAction": "",
 "AttackActionData": "",
 "Battler": "",
+"BattlerAI": "",
 "BattlerAnim": "",
 "BattlerStats": "",
 "Board": "",

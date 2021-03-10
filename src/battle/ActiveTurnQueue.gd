@@ -16,8 +16,21 @@ var is_active := true setget set_is_active
 # This is meant for accessibility and to control difficulty.
 var time_scale := 1.0 setget set_time_scale
 
+# Emitted when a player-controlled battler finished playing a turn, that is, when
+# the `_play_turn()` function returns.
+# We're going to use it to play the next battler's turn.
+signal player_turn_finished
+
+# If `true`, the player is currently playing a turn
+var _is_player_playing := false
+# Stack of player-controlled battlers that have to take turns.
+var _queue_player := []
+
 
 func _ready() -> void:
+	# to start the next turn.
+	connect("player_turn_finished", self, "_on_player_turn_finished")
+	
 	for battler in battlers:
 		# Listen to each battler's ready_to_act signal,
 		# binding a reference to the battler to the callback.
@@ -39,8 +52,17 @@ func set_time_scale(value: float) -> void:
 	for battler in battlers:
 		battler.time_scale = time_scale
 
+# receives battlers that reached a _readiness of 100.
 func _on_Battler_ready_to_act(battler: Battler) -> void:
-	_play_turn(battler)
+	# If the battler is controlled by the player but another
+	# player-controlled battler is in the middle of a turn,
+	# we add this one to the queue.
+	if battler.is_player_controlled() and _is_player_playing:
+		_queue_player.append(battler)
+	# Otherwise, it's an AI-controlled battler or the player is
+	# waiting for a turn, and we can call `_play_turn()`.
+	else:
+		_play_turn(battler)
 
 func _play_turn(battler: Battler) -> void:
 	var action_data: ActionData
@@ -67,6 +89,9 @@ func _play_turn(battler: Battler) -> void:
 		# target. The function `set_time_scale()` recursively assigns that value
 		# to all characters on the battlefield.
 		set_time_scale(0.05)
+		
+		# this is the start of a player-controlled battler's turn.
+		_is_player_playing = true
 
 		# Here is the meat of the player's turn. We use a while loop to wait for
 		# the player to select a valid action and target(s).
@@ -111,8 +136,13 @@ func _play_turn(battler: Battler) -> void:
 	var action = AttackAction.new(action_data, battler, targets)
 	# And let the battler consume it.
 	battler.act(action)
+	
 	# We wait for the battler's action to finish to complete the function.
 	yield(battler, "action_finished")
+	
+	# At the very end of the function, if it's a player-controlled battler ending their turn, we emit our new signal.
+	if battler.is_player_controlled():
+		emit_signal("player_turn_finished")
 
 func _player_select_action_async(battler: Battler) -> ActionData:
 	# TODO get the played card
@@ -127,3 +157,14 @@ func _player_select_targets_async(_action: ActionData, opponents: Array) -> Arra
 		return [opponents[0]]
 	else:
 		return []	
+
+func _on_player_turn_finished() -> void:
+	# When a player-controlled character finishes their turn
+	# and the queue is empty, the player is no longer playing. 
+	if _queue_player.empty():
+		_is_player_playing = false
+	# Otherwise, we pop the array's first value and let the
+	# corresponding battler play their turn.
+	else:
+		_play_turn(_queue_player.pop_front())
+

@@ -172,8 +172,8 @@ func act(action) -> void:
 	emit_signal("action_finished")
 	battler_anim.move_back()
 
-
-
-
 func _on_BattlerAnim_animation_finished(anim_name):
 	emit_signal("animation_finished", anim_name)
+
+func is_fallen() -> bool:
+	return stats.health <= 0
