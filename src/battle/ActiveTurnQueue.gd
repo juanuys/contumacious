@@ -32,6 +32,9 @@ func _ready() -> void:
 	connect("player_turn_finished", self, "_on_player_turn_finished")
 	
 	for battler in battlers:
+		# Setting up all AI-powered agents.
+		battler.setup(battlers)
+		
 		# Listen to each battler's ready_to_act signal,
 		# binding a reference to the battler to the callback.
 		battler.connect("ready_to_act", self, "_on_Battler_ready_to_act", [battler])
@@ -129,8 +132,14 @@ func _play_turn(battler: Battler) -> void:
 	
 	else:
 		# TODO hard-coded for now
-		action_data = battler.actions[0]
-		targets = [potential_targets[0]]
+		# action_data = battler.actions[0]
+		# targets = [potential_targets[0]]
+		
+		# Letting the AI choose by calling its `choose()` method.
+		var result: Dictionary = battler.get_ai().choose()
+		action_data = result.action
+		targets = result.targets
+		print("%s attacks %s with action %s" % [battler.name, targets[0].name, action_data.label])
 	
 	# Create a new attack action based on the chosen `action_data` and `targets`.
 	var action = AttackAction.new(action_data, battler, targets)

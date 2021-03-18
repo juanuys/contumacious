@@ -1,6 +1,8 @@
 class_name BattlerAI
 extends Node
 
+enum HealthStatus { CRITICAL, LOW, MEDIUM, HIGH, FULL }
+
 # The actor that has this AI brain.
 var _actor: Battler
 # An array of battlers in the AI's party, including the `_actor`.
@@ -10,6 +12,13 @@ var _opponents := []
 
 # For each ActionData key, stores an array of opponents that are weak to this action.
 var _weaknesses_dict := {}
+
+var _rng := RandomNumberGenerator.new()
+
+# Queue of [ActionData]. If not empty, the action is popped
+# from this array on the next turn.
+# Use this property to plan actions over multiple turns.
+var _next_actions := []
 
 # Filters and saves the list of party members and opponents.
 func setup(actor: Battler, battlers: Array) -> void:
@@ -93,8 +102,6 @@ func _get_battler_with_lowest_health(battlers: Array) -> Battler:
 			weakest = battler
 	return weakest
 
-enum HealthStatus { CRITICAL, LOW, MEDIUM, HIGH, FULL }
-
 
 # Returns `true` if the `battler`'s health is below a given ratio.
 func _is_health_below(battler: Battler, ratio: float) -> bool:
@@ -159,5 +166,48 @@ func _is_health_above(battler: Battler, ratio: float) -> bool:
 
 # Returns `true` if the `battler` is weak to the `action`'s element.
 func _is_weak_to(battler: Battler, action: ActionData) -> bool:
-	return true if action.element in battler.stats.weaknesses else false
+	return action.element in battler.stats.weaknesses
 
+# Returns a dictionary representing an action and its targets.
+# The dictionary has the form { action: Action, targets: Array[Battler] }
+# Arguments:
+# - `battlers: Array[Battler]`, all battlers on the field, including the actor
+func choose() -> Dictionary:
+	# A defensive assert to ensure we don't forget to call `setup()` on the AI during development.
+	assert(
+		not _opponents.empty(),
+		"You must call setup() on the AI and give it opponents for it to work."
+	)
+	return _choose()
+
+
+func _choose() -> Dictionary:
+	# We start the turn by gathering information about the battlefield.
+	var battle_info := _gather_information()
+
+	# The values we need to return in our dictionary.
+	var action: ActionData
+	var targets := []
+	
+	if not _next_actions.empty():
+		action = _next_actions.pop_front()
+	else:
+		action = _choose_action(battle_info)
+
+	# There's a special case with actions, if it's targeting its user, we don't need
+	# to choose a target.
+	if action.is_targeting_self:
+		targets = [_actor]
+	else:
+		targets = _choose_targets(action, battle_info)
+	return {action = action, targets = targets}
+
+
+# Virtual method. Returns the action the agent is choosing to use this turn.
+func _choose_action(_info: Dictionary) -> ActionData:
+	return _actor.actions[0]
+
+
+# Virtual method. Returns the agent's targets this turn.
+func _choose_targets(_action: ActionData, _info: Dictionary) -> Array:
+	return [_info.weakest_target]

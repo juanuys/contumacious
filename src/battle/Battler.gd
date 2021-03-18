@@ -177,3 +177,24 @@ func _on_BattlerAnim_animation_finished(anim_name):
 
 func is_fallen() -> bool:
 	return stats.health <= 0
+
+
+# This is the concrete instance of `ai_scene
+var _ai_instance = null
+
+# Allows the AI brain to get a reference to all battlers on the field.
+func setup(battlers: Array) -> void:
+	if ai_scene:
+		# We instance the `ai_scene` and store a reference to it.
+		_ai_instance = ai_scene.instance()
+		# `BattlerAI.setup()` takes the actor and all battlers in the encounter.
+		_ai_instance.setup(self, battlers)
+		# Adding the instance as a child to trigger its `_ready()` callback.
+		add_child(_ai_instance)
+
+
+# Returns the `BattlerAI` instance attached to this battler.
+# We wrap it in a method because our property is
+# pseudo-private: we want it to be read-only.
+func get_ai() -> Node:
+	return _ai_instance
