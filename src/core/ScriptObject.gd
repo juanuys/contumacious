@@ -10,8 +10,8 @@ extends Reference
 signal primed
 
 
-# The card which owns this Task
-var owner_card: Card
+# The object which owns this Task
+var owner
 # The subjects is typically a `Card` object
 # in the future might be other things
 var subjects := []
@@ -36,12 +36,13 @@ var trigger_card: Card
 
 
 # prepares the properties needed by the script to function.
-func _init(card: Card, script: Dictionary, _trigger_card = null) -> void:
+func _init(_owner, script: Dictionary, _trigger_card = null) -> void:
 	# We store the card which executes this task
-	owner_card = card
+	owner = _owner
 	# We store all the task properties in our own dictionary
 	script_definition = script
 	trigger_card = _trigger_card
+	parse_replacements()
 
 
 # Returns the specified property of the string.
@@ -86,7 +87,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			if SP.VALUE_PER in str(subject_count):
 				subject_count = count_per(
 						get_property(SP.KEY_SUBJECT_COUNT),
-						owner_card,
+						owner,
 						get_property(get_property(SP.KEY_SUBJECT_COUNT)))
 			elif str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
 				# When the value is set to -1, the seek will retrieve as many
@@ -101,12 +102,13 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				if get_property(SP.KEY_IS_INVERTED):
 					subject_count *= -1
 			requested_subjects = subject_count
-			for c in cfc.NMAP.board.get_all_cards():
+			var subject_list := sort_subjects(cfc.NMAP.board.get_all_cards())
+			for c in subject_list:
 				if SP.check_validity(c, script_definition, "seek"):
 					subjects_array.append(c)
-				subject_count -= 1
-				if subject_count == 0:
-					break
+					subject_count -= 1
+					if subject_count == 0:
+						break
 			if requested_subjects > 0\
 					and subjects_array.size() < requested_subjects:
 				is_valid = false
@@ -117,7 +119,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			if SP.VALUE_PER in str(subject_count):
 				subject_count = count_per(
 						get_property(SP.KEY_SUBJECT_COUNT),
-						owner_card,
+						owner,
 						get_property(get_property(SP.KEY_SUBJECT_COUNT)))
 			elif str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
 				subject_count = -1
@@ -126,7 +128,9 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				if get_property(SP.KEY_IS_INVERTED):
 					subject_count *= -1
 			requested_subjects = subject_count
-			for c in get_property(SP.KEY_SRC_CONTAINER).get_all_cards():
+			var subject_list := sort_subjects(
+					get_property(SP.KEY_SRC_CONTAINER).get_all_cards())
+			for c in subject_list:
 				if SP.check_validity(c, script_definition, "tutor"):
 					subjects_array.append(c)
 					subject_count -= 1
@@ -161,7 +165,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			if SP.VALUE_PER in str(subject_count):
 				subject_count = count_per(
 						get_property(SP.KEY_SUBJECT_COUNT),
-						owner_card,
+						owner,
 						get_property(get_property(SP.KEY_SUBJECT_COUNT)))
 			elif str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
 				# This variable is used to only retrieve as many cards
@@ -211,8 +215,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			else:
 				print_debug("WARNING: Subject: trigger requested, but no trigger card passed")
 		SP.KEY_SUBJECT_V_SELF:
-			is_valid = SP.check_validity(owner_card, script_definition, "subject")
-			subjects_array.append(owner_card)
+			is_valid = SP.check_validity(owner, script_definition, "subject")
+			subjects_array.append(owner)
 		_:
 			subjects_array = []
 	subjects = subjects_array
@@ -227,12 +231,14 @@ func _initiate_card_targeting() -> Card:
 	# We wait a centisecond, to prevent the card's _input function from seeing
 	# The double-click which started the script and immediately triggerring
 	# the target completion
-	yield(owner_card.get_tree().create_timer(0.1), "timeout")
-	owner_card.targeting_arrow.initiate_targeting()
+	print("_initiate_card_targeting")
+	yield(owner.get_tree().create_timer(0.1), "timeout")
+	owner.targeting_arrow.initiate_targeting()
 	# We wait until the targetting has been completed to continue
-	yield(owner_card.targeting_arrow,"target_selected")
-	var target = owner_card.targeting_arrow.target_card
-	owner_card.targeting_arrow.target_card = null
+	var target = yield(owner.targeting_arrow,"target_selected")
+	# var target = owner.targeting_arrow.target_card
+	print(">> target acquired ", target)
+	owner.targeting_arrow.target_card = null
 	#owner_card.target_card = null
 	return(target)
 
@@ -251,3 +257,138 @@ static func count_per(
 			per_definitions,
 			_trigger_card)
 	return(per_msg.found_things)
+
+
+# Sorts the subjects list
+# according to the directives in the following three keys
+# * [KEY_SORT_BY](ScriptProperties#KEY_SORT_BY)
+# * [KEY_SORT_NAME](ScriptProperties#KEY_SORT_NAME)
+# * [KEY_SORT_DESCENDING](ScriptProperties#KEY_SORT_DESCENDING)
+func sort_subjects(subject_list: Array) -> Array:
+	var sorted_subjects := []
+	var sort_by : String = get_property(SP.KEY_SORT_BY)
+	if sort_by == "node_index":
+		sorted_subjects = subject_list.duplicate()
+	elif sort_by == "random":
+		sorted_subjects = subject_list.duplicate()
+		CFUtils.shuffle_array(sorted_subjects)
+	# If the player forgot to fill in the SORT_NAME, we don't change the sort.
+	# But we put out a warning instead
+	elif not get_property(SP.KEY_SORT_NAME):
+		print_debug("Warning: sort_by " + sort_by + ' requested '\
+				+ 'but key ' + SP.KEY_SORT_NAME + ' is missing!')
+	else:
+		# I don't know if it's going to be a token name
+		# or a property name, so I name the variable accordingly.
+		var thing : String = get_property(SP.KEY_SORT_NAME)
+		var sorting_list := []
+		if sort_by == "property":
+			for c in subject_list:
+				# We create a list of dictionaries
+				# because we cannot tell the sort_custom()
+				# method what to search for
+				sorting_list.append({
+					"card": c,
+					"value": c.get_property(thing)
+				})
+		if sort_by == "token":
+			for c in subject_list:
+				sorting_list.append({
+					"card": c,
+					"value": c.tokens.get_token_count(thing)
+				})
+		sorting_list.sort_custom(CFUtils,'sort_by_card_field')
+		# Once we've sorted the items, we put just the card objects
+		# in a new list, which we return to the player.
+		for d in sorting_list:
+			sorted_subjects.append(d.card)
+	# If we want a descending list, we invert the subject list
+	if get_property(SP.KEY_SORT_DESCENDING):
+		sorted_subjects.invert()
+	return(sorted_subjects)
+
+
+# Goes through the provided scripts and replaces certain keyword values
+# with variables retireved from specified location.
+#
+# This allows us for example to filter cards sought based on the properties
+# of the card running the script.
+func parse_replacements() -> void:
+	# We need a deep copy because of all the nested dictionaries
+	var wip_definitions := script_definition.duplicate(true)
+	for key in wip_definitions:
+		# We have to go through all the state filters
+		# Because they have variable names
+		if SP.FILTER_STATE in key:
+			var state_filters_array : Array =  wip_definitions[key]
+			for state_filters in state_filters_array:
+				for filter in state_filters:
+					# This branch checks for replacements for
+					# filter_properties
+					# We have to go to each dictionary for filter_properties
+					# filters and check all values if they contain a
+					# relevant keyword
+					if SP.FILTER_PROPERTIES in filter:
+						var property_filters = state_filters[filter]
+						for property in property_filters:
+							if str(property_filters[property]) in\
+									[SP.VALUE_COMPARE_WITH_OWNER,
+									SP.VALUE_COMPARE_WITH_TRIGGER]:
+								var card: Card
+								if str(property_filters[property]) ==\
+										SP.VALUE_COMPARE_WITH_OWNER:
+									card = owner
+								else:
+									card = trigger_card
+								# Card name is always grabbed from
+								# Card.canonical_name
+								if property == "Name":
+									property_filters[property] =\
+											card.canonical_name
+								else:
+									property_filters[property] =\
+											card.get_property(property)
+					# This branch checks for replacements for
+					# filter_tokens
+					# We have to go to each dictionary for filter_tokens
+					# filters and check all values if they contain a
+					# relevant keyword
+					if SP.FILTER_TOKENS in filter:
+						var token_filters_array = state_filters[filter]
+						for token_filters in token_filters_array:
+							if str(token_filters.get(SP.FILTER_COUNT)) in\
+									[SP.VALUE_COMPARE_WITH_OWNER,
+									SP.VALUE_COMPARE_WITH_TRIGGER]:
+								var card: Card
+								if str(token_filters.get(SP.FILTER_COUNT)) ==\
+										SP.VALUE_COMPARE_WITH_OWNER:
+									card = owner
+								else:
+									card = trigger_card
+								var owner_token_count :=\
+										card.tokens.get_token_count(
+										token_filters["filter_" + SP.KEY_TOKEN_NAME])
+								token_filters[SP.FILTER_COUNT] =\
+										owner_token_count
+					if SP.FILTER_DEGREES in filter:
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
+							var card: Card = owner
+							state_filters[filter] = card.card_rotation
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_TRIGGER:
+							var card: Card = trigger_card
+							state_filters[filter] = card.card_rotation
+					if SP.FILTER_FACEUP in filter:
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
+							var card: Card = owner
+							state_filters[filter] = card.is_faceup
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_TRIGGER:
+							var card: Card = trigger_card
+							state_filters[filter] = card.is_faceup
+					if SP.FILTER_PARENT in filter:
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
+							var card: Card = owner
+							state_filters[filter] = card.get_parent()
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_TRIGGER:
+							var card: Card = trigger_card
+							state_filters[filter] = card.get_parent()
+	script_definition = wip_definitions

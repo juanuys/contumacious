@@ -14,7 +14,7 @@ func setup() -> void:
 	.setup()
 	
 	# also set the face gfx
-	var card_art_file: String = "res://assets/cards/" + card_name
+	var card_art_file: String = "res://assets/cards/" + canonical_name
 	for extension in ['.jpg','.jpeg','.png']:
 		if ResourceLoader.exists(card_art_file + extension):
 			var new_texture = ImageTexture.new();
@@ -34,4 +34,9 @@ func _on_Card_gui_input(event) -> void:
 			targeting_arrow.initiate_targeting()
 		elif not event.is_pressed() and event.get_button_index() == 1:
 			targeting_arrow.complete_targeting()
+			
+			if ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE
+					and get_state_exec() == "hand")
+					or get_state_exec() == "board"):
+				execute_scripts()
 

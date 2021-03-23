@@ -304,24 +304,24 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # Value Type: Array of Strings
 # All card manipulation Signals will send a list of tags
-# marking the type of effect that triggered them. 
+# marking the type of effect that triggered them.
 #
-# By Default it's the tags sent is just ["Manual"] 
+# By Default it's the tags sent is just ["Manual"]
 # for manipulation via the core API methods.
 # However when the manipulation is done via ScriptingEngine, the tags
 # can be modified by the script defintion. The ScrptingEngine will always
 # mark them as "Scripted" instead of "Manual" at the least.
 #
-# With this key, you can specify a number of keywords 
+# With this key, you can specify a number of keywords
 # you can assign to your script, which details what function it is serving.
 # These can be hooked on by the [AlterantEngine] and the [ScriptingEngine]
-# to figure out if this script effects should be altered or triggered. 
+# to figure out if this script effects should be altered or triggered.
 #
 # Tags specified with ScriptTasks will be injected along with list sent
-# by the ScriptingEngine. So for example `"tags": ["PlayCost"]` 
+# by the ScriptingEngine. So for example `"tags": ["PlayCost"]`
 # will be sent as ["Scripted", "PlayCost"] by the ScriptingEngine.
 #
-# A signal or script has to have all the tags a 
+# A signal or script has to have all the tags a
 # [FILTER_TAGS](#FILTER_TAGS) task is looking for, in order to be considered.
 const KEY_TAGS := "tags"
 # Value Type: Dictionary
@@ -420,10 +420,30 @@ const KEY_ALTERATION := "alteration"
 #```
 # The above example can be tranlated to:
 # *"Draw 1 card for each card with 0 power on the board"*
+#
+# When used in modify_properties, the VALUE_PER can be appended by a plus sign as well
+#```
+#{"manual":
+#	{"board": [
+#		{
+#			"name": "modify_properties",
+#			"set_properties": {"Power": "+per_counter"},
+#			"subject": "self",
+#			"per_counter": {"counter_name": "research"}
+#		},
+#	]}
+#}
+#```
+# The above example can be tranlated to:
+# *"Increase this card's power by the amount of research you have"*
+#
+# Note using a minus-sign '-' in place of a plus-sign will not work as expected.
+# Use [KEY_IS_INVERTED](#KEY_IS_INVERTED) instead
 const VALUE_PER := "per_"
 # Value Type: String
 #
-# This key is typically needed in combination with [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
+# This key is typically needed in combination with
+# [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
 # to specify which property to base the per upon.
 # When used this way, the property **has** to be a number.
 #
@@ -501,6 +521,33 @@ const KEY_PER_TUTOR := "per_tutor"
 # [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL),
 # but a [FILTER_STATE](#FILTER_STATE) should also be typically specified
 const KEY_PER_BOARDSEEK := "per_boardseek"
+# Value Type: bool.
+#
+# Used in combination with
+# [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK) or [KEY_PER_TUTOR](#KEY_PER_TUTOR).
+# It limits the count of items to only once per unique card.
+const KEY_COUNT_UNIQUE := "count_unique"
+# Value Type: String.
+#
+# Holds the field type by which to sort the subjects.
+# * node_index (default):  This is the order Godot engine
+#    picked up the children nodes, which is their node index
+# * property: Sort by the property specified in [KEY_SORT_BY](#KEY_SORT_BY)
+# * token: Sort by the token specified in [KEY_SORT_BY](#KEY_SORT_BY)
+# * random: Randomize the subjects
+const KEY_SORT_BY := "sort_by"
+# Value Type: String.
+#
+# When sort_by is not `node_index` or `random`,
+# provides the name of the property or token to sort by.
+#
+# Note that if this left empty when sort by properties or tokens is requested,
+# then no resorting will be done.
+const KEY_SORT_NAME := "sort_name"
+# Value Type: bool (default: false).
+#
+# If true, will invert the subject list sort order.
+const KEY_SORT_DESCENDING := "sort_descending"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect
@@ -535,6 +582,59 @@ const KEY_COMPARISON := "comparison"
 # * [KEY_TEMP_MOD_PROPERTIES](#KEY_TEMP_MOD_PROPERTIES) (In the value fields)
 # * [KEY_TEMP_MOD_COUNTERS](#KEY_TEMP_MOD_COUNTERS) (In the value fields)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
+# This value can be inserted as the value in one of the following:
+# * [FILTER_PROPERTIES](#FILTER_PROPERTIES)
+# * [FILTER_TOKENS](#FILTER_TOKENS)
+# * [FILTER_DEGREES](#FILTER_DEGREES)
+# * [FILTER_FACEUP](#FILTER_FACEUP)
+# * [FILTER_PARENT](#FILTER_PARENT)
+#
+# When this is done, the value in this field, will br replaced with the value
+# in the relevant field from the card owning the script
+#
+# This allows for comparison between the owner of the script and the potential
+# subjects
+#
+# Example
+# ```
+#{
+#	"alterants": {
+#		"board": [
+#			{
+#				"filter_task": "get_counter",
+#				"filter_counter_name": "skill",
+#				"alteration": "per_boardseek",
+#				"filter_state_trigger": [
+#					{
+#						"filter_properties": {
+#							"Type": "Shader"
+#						},
+#					}
+#				],
+#				"per_boardseek": {
+#					"subject": "boardseek",
+#					"subject_count": "all",
+#					"filter_state_seek": [
+#						{
+#							"filter_properties": {
+#								"Name": "compare_with_trigger"
+#							}
+#						}
+#					]
+#				}
+#			},
+#		],
+#	},
+#},
+# ```
+# The example above translates to
+# *"When installing a Shader, you have +1 skill for each
+# other Shader with the same name you have installed"*
+const VALUE_COMPARE_WITH_OWNER := "compare_with_owner"
+# Same as [VALUE_COMPARE_WITH_OWNER](#VALUE_COMPARE_WITH_OWNER)
+# but compares against card that caused the script to trigger, rather than
+# the owner of the script
+const VALUE_COMPARE_WITH_TRIGGER := "compare_with_trigger"
 # Value Type: bool (Default = false)
 #
 # Specifies whether this script or task can be skipped by the owner.
@@ -641,9 +741,9 @@ const FILTER_STATE := "filter_state_"
 # Each value is a dictionary where the  key is a card property, and the value
 # is the desired property value to match on the filtered card.
 #
-# If the card property is numerical, 
-# then the value can be a string. 
-# In that case it is assumed that the string is a counter name 
+# If the card property is numerical,
+# then the value can be a string.
+# In that case it is assumed that the string is a counter name
 # against which to compare the property value
 const FILTER_PROPERTIES := "filter_properties"
 #Value Type: Node.
@@ -682,6 +782,8 @@ const FILTER_COUNT := "filter_count"
 # Value Type: String
 # * [TRIGGER_V_COUNT_INCREASED](#TRIGGER_V_COUNT_INCREASED)
 # * [TRIGGER_V_COUNT_DECREASED](#TRIGGER_V_COUNT_DECREASED)
+#
+# Filter used to check if the modification is positive or negative
 const FILTER_COUNT_DIFFERENCE := "filter_count_difference"
 # Value Type: Dictionary
 #
@@ -797,6 +899,14 @@ const FILTER_PER_TUTOR = "filter_per_tutor_count"
 # Requires similar input as [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
 # But also needs [FILTER_CARD_COUNT](#FILTER_CARD_COUNT) specified
 const FILTER_PER_BOARDSEEK = "filter_per_boardseek_count"
+# Value Type: Dictionary
+#
+# Executes the script, only if the specified counter has the requested value.
+#
+# Requires a [KEY_COUNTER_NAME](#KEY_COUNTER_NAME) and
+# [FILTER_COUNT](#FILTER_OUNT) specified.
+# Optionally also [KEY_COMPARISON](#KEY_COMPARISON)
+const FILTER_PER_COUNTER := "filter_per_counter"
 # Value Type: int.
 #
 # Filter used for checking against the amount of cards found with
@@ -926,10 +1036,10 @@ const TRIGGER_TASK_NAME = "task_name"
 #---------------------------------------------------------------------
 
 # Value is sent by trigger when new token count is higher than old token count.
-# Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
+# Compared against [FILTER_COUNT_DIFFERENCE](#FILTER_COUNT_DIFFERENCE)
 const TRIGGER_V_COUNT_INCREASED := "increased"
 # Value is sent by trigger when new token count is lower than old token count.
-# Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
+# Compared against [FILTER_COUNT_DIFFERENCE](#FILTER_COUNT_DIFFERENCE)
 const TRIGGER_V_COUNT_DECREASED := "decreased"
 
 
@@ -943,6 +1053,7 @@ static func get_default(property: String):
 				KEY_IS_INVERTED,\
 				KEY_SET_TO_MOD,\
 				KEY_IS_OPTIONAL,\
+				KEY_SORT_DESCENDING,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
@@ -969,6 +1080,8 @@ static func get_default(property: String):
 			default = []
 		KEY_EXEC_TRIGGER:
 			default = "manual"
+		KEY_SORT_BY:
+			default = "node_index"
 		_:
 			default = null
 	return(default)
@@ -1000,6 +1113,9 @@ static func filter_trigger(
 			and card_scripts.get("trigger") == "another"\
 			and trigger_card == owner_card:
 		is_valid = false
+
+	var comparison : String = card_scripts.get(
+			KEY_COMPARISON, get_default(KEY_COMPARISON))
 
 	# Script tags filter checks
 	var filter_tags = card_scripts.get(FILTER_TAGS)
@@ -1052,10 +1168,12 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card Tokens filter checks
-	if is_valid and card_scripts.get(FILTER_COUNT) != null \
-			and card_scripts.get(FILTER_COUNT) != \
-			trigger_details.get(TRIGGER_NEW_COUNT):
-		is_valid = false
+	if is_valid and card_scripts.get(FILTER_COUNT) != null:
+		if not CFUtils.compare_numbers(
+				trigger_details.get(TRIGGER_NEW_COUNT),
+				card_scripts.get(FILTER_COUNT),
+				comparison):
+			is_valid = false
 	if is_valid and card_scripts.get(FILTER_COUNT_DIFFERENCE):
 		var prev_count = trigger_details.get(TRIGGER_PREV_COUNT)
 		var new_count = trigger_details.get(TRIGGER_NEW_COUNT)
@@ -1130,6 +1248,20 @@ static func filter_trigger(
 					trigger_details.get(TRIGGER_PREV_PROPERTY_VALUE):
 				is_valid = false
 
+	# Counter comparison check
+	if is_valid and card_scripts.get(FILTER_PER_COUNTER):
+		var counter = card_scripts.get(FILTER_PER_COUNTER).get(KEY_COUNTER_NAME)
+		var found_count = cfc.NMAP.board.counters.get_counter(counter)
+		var required_count = card_scripts.\
+				get(FILTER_PER_COUNTER).get(FILTER_COUNT)
+		var comparison_type = card_scripts.get(FILTER_PER_COUNTER).get(
+				KEY_COMPARISON, get_default(KEY_COMPARISON))
+		if not CFUtils.compare_numbers(
+				found_count,
+				required_count,
+				comparison_type):
+			is_valid = false
+
 	# Card Count on board filter check
 	if is_valid and card_scripts.get(FILTER_PER_BOARDSEEK):
 		var per_msg = perMessage.new(
@@ -1194,10 +1326,16 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 			# value is a counter name
 			else:
 				comparison_value = cfc.NMAP.board.counters.get_counter(
-						property_filters[property])
+						property_filters[property], card)
 			if not CFUtils.compare_numbers(
 					card.get_property(property),
 					comparison_value,
+					comparison_type):
+				card_matches = false
+		elif property == "Name":
+			if not CFUtils.compare_strings(
+					property_filters[property],
+					card.canonical_name,
 					comparison_type):
 				card_matches = false
 		else:
@@ -1218,27 +1356,23 @@ static func check_token_filter(card, token_states: Array) -> bool:
 	var card_matches := true
 	# Token filters always contain an array of token states
 	for token_state in token_states:
+		var comparison_default : String = get_default(KEY_COMPARISON)
+		# If the token count is not defined, we are awlays checking if there
+		# is any number of tokens of this type on this card
+		# Therefore it's effectively a "ge 1" comparison
+		if token_state.get(FILTER_COUNT) == null:
+			comparison_default = 'ge'
 		var comparison_type : String = token_state.get(
-				KEY_COMPARISON, get_default(KEY_COMPARISON))
+				KEY_COMPARISON, comparison_default)
 		if token_state.get("filter_" + TRIGGER_TOKEN_NAME):
-			var token = card.tokens.get_token(
+			var token_count : int = card.tokens.get_token_count(
 					token_state.get("filter_" + TRIGGER_TOKEN_NAME))
-			if not token:
-				if token_state.get(FILTER_COUNT):
-					match comparison_type:
-						"eq","ge":
-							if token_state.get(FILTER_COUNT) != 0:
-								card_matches = false
-						"gt":
-							card_matches = false
-				else:
-					card_matches = false
-			elif token_state.get(FILTER_COUNT):
-				if not CFUtils.compare_numbers(
-						token.count,
-						token_state.get(FILTER_COUNT),
-						comparison_type):
-					card_matches = false
+			var filter_count = token_state.get(FILTER_COUNT,1)
+			if not CFUtils.compare_numbers(
+					token_count,
+					filter_count,
+					comparison_type):
+				card_matches = false
 	return(card_matches)
 
 

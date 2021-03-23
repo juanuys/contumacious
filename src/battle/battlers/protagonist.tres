@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://src/battle/ui/BattlerUIData.gd" type="Script" id=1]
+[ext_resource path="res://assets/characters/fenyx-paperbg.png" type="Texture" id=2]
+
+[resource]
+script = ExtResource( 1 )
+display_name = "Fenyx"
+texture = ExtResource( 2 )
+flip = false

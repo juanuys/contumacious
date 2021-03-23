@@ -11,3 +11,4 @@ data_*/
 
 # opyate: custom ignores
 bin/
+tmp-cgf/

@@ -14,7 +14,6 @@ func _init(data: AttackActionData, actor, targets: Array).(data, actor, targets)
 	pass
 
 
-
 # Returns the damage dealt by this action. We will update this function
 # when we implement status effects.
 func calculate_potential_damage_for(target) -> int:
@@ -26,13 +25,17 @@ func _apply_async() -> bool:
 	# a `Battler.play()` method instead to encapsulate it completely, but the action
 	# is an object representing a method call on the battler, in a sense.
 	var anim = _actor.battler_anim
-	
+
 	# We apply the action to each target so attacks work both for single and multiple targets.
 	for target in _targets:
+		# We use the `StatusEffectBuilder` to instantiate the right effect.
+		var status: StatusEffect = StatusEffectBuilder.create_status_effect(
+			target, _data.status_effect
+		)
 		var hit_chance := Formulas.calculate_hit_chance(_data, _actor, target)
 		var damage := calculate_potential_damage_for(target)
-		var hit := Hit.new(damage, hit_chance)
-	
+		var hit := Hit.new(damage, hit_chance, status)
+
 		# Here's how we use the animations' `triggered` signal. We bind the target and each hit
 		# to the `_on_BattlerAnim_triggered()` callback.
 		anim.connect("triggered", self, "_on_BattlerAnim_triggered", [target, hit])

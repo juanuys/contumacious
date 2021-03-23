@@ -1,6 +1,7 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" load_steps=3 format=2]
 
 [ext_resource path="res://src/battle/command/AttackActionData.gd" type="Script" id=1]
+[ext_resource path="res://src/battle/statuseffects/effects/bug.tres" type="Resource" id=2]
 
 [resource]
 script = ExtResource( 1 )
@@ -12,3 +13,4 @@ is_targeting_all = false
 readiness_saved = 20.0
 damage_multiplier = 0.8
 hit_chance = 100.0
+status_effect = ExtResource( 2 )

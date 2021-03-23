@@ -24,7 +24,6 @@ var _readiness := 0.0 setget _set_readiness
 # pause the battler from a parent node (e.g. for cutscenes)
 var is_active: bool = true setget set_is_active
 
-
 # Emitted when the battler is ready to take a turn.
 signal ready_to_act
 # Emitted when the battler's `_readiness` changes.
@@ -45,7 +44,11 @@ signal action_finished
 signal animation_finished(anim_name)
 
 onready var battler_anim: BattlerAnim = $BattlerAnim
+onready var _status_effect_container: StatusEffectContainer = $StatusEffectContainer
 
+export var ui_data: Resource
+
+onready var my_sprite := $BattlerAnim/Pivot/Area2D/Sprite
 
 func _ready() -> void:
 	# Resources are shared in memory so if you have two monsters of 
@@ -56,18 +59,25 @@ func _ready() -> void:
 	assert(stats is BattlerStats)
 	stats = stats.duplicate()
 	stats.reinitialize()
-	
+
 	# We connect to the stats' `health_depleted` signal to react to the health reaching `0`.
 	stats.connect("health_depleted", self, "_on_BattlerStats_health_depleted")
+	
+	# set sprite and other properties according to Resource
+	my_sprite.texture = ui_data.texture
+	my_sprite.flip_h = ui_data.flip
+
 
 func _process(delta: float) -> void:
 	# Increments the `_readiness`. Note stats.speed isn't defined yet.
 	_set_readiness(_readiness + stats.speed * delta * time_scale)
 
-# We will later need to propagate the time scale to status effects, which is why we use a
-# setter function.
+
+# propagate the time scale to status effects
 func set_time_scale(value) -> void:
 	time_scale = value
+	_status_effect_container.time_scale = time_scale
+
 
 # Setter for the `_readiness` variable.
 # Emits signals when the value changes and when the battler is ready to act.
@@ -80,13 +90,24 @@ func _set_readiness(value: float) -> void:
 		# When the battler is ready to act, we pause the process loop. Doing so prevents _process from triggering another call to this function.
 		set_process(false)
 
+
+# propagate the active bool to status effects
 func set_is_active(value) -> void:
 	is_active = value
 	set_process(is_active)
+	_status_effect_container.is_active = value
+
 
 # Returns `true` if the battler is controlled by the player.
 func is_player_controlled() -> bool:
 	return ai_scene == null
+
+
+# This function applies the status effect to the battler.
+# Effect is of type `StatusEffect`.
+func _apply_status_effect(effect) -> void:
+	print(">> applying status effect ", effect)
+	_status_effect_container.add(effect)
 
 # ------------------------------------------
 # Targeting
@@ -118,7 +139,6 @@ func set_is_selected(value) -> void:
 		battler_anim.move_forward()
 
 
-
 func set_is_selectable(value) -> void:
 	is_selectable = value
 	if not is_selectable:
@@ -136,14 +156,20 @@ func _on_BattlerStats_health_depleted() -> void:
 		# it makes them disappear from the battlefield.
 		battler_anim.queue_animation("die")
 
+
 # Applies a hit object to the battler, dealing damage or status effects.
 func take_hit(hit: Hit) -> void:
 	# We encapsulated the hit chance in the hit. The hit object tells us if we should take damage.
 	if hit.does_hit():
 		_take_damage(hit.damage)
+		# If the hit comes with an effect, we apply it to the battler.
+		if hit.effect:
+			print("<< taking damage from effect")
+			_apply_status_effect(hit.effect)
 		emit_signal("damage_taken", hit.damage)
 	else:
 		emit_signal("hit_missed")
+
 
 # Applies damage to the battler's stats.
 # Later, it should also trigger a damage animation.
@@ -152,6 +178,7 @@ func _take_damage(amount: int) -> void:
 	print("%s took %s damage. Health is now %s." % [name, amount, stats.health])
 	if stats.health > 0:
 		battler_anim.play("take_damage")
+
 
 # We can't specify the `action`'s type hint here due to cyclic
 # dependency errors in Godot 3.2.
@@ -172,8 +199,10 @@ func act(action) -> void:
 	emit_signal("action_finished")
 	battler_anim.move_back()
 
+
 func _on_BattlerAnim_animation_finished(anim_name):
 	emit_signal("animation_finished", anim_name)
+
 
 func is_fallen() -> bool:
 	return stats.health <= 0
@@ -181,6 +210,7 @@ func is_fallen() -> bool:
 
 # This is the concrete instance of `ai_scene
 var _ai_instance = null
+
 
 # Allows the AI brain to get a reference to all battlers on the field.
 func setup(battlers: Array) -> void:

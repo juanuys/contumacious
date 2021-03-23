@@ -171,6 +171,7 @@ tracks/0/keys = {
 extents = Vector2( 490.308, 919.558 )
 
 [node name="BattlerAnim" type="Position2D"]
+scale = Vector2( -1, 1 )
 script = ExtResource( 1 )
 
 [node name="Pivot" type="Position2D" parent="."]
@@ -186,6 +187,8 @@ anims/_setup = SubResource( 4 )
 anims/take_damage = SubResource( 5 )
 
 [node name="Area2D" type="Area2D" parent="Pivot"]
+collision_layer = 2
+collision_mask = 2
 
 [node name="Sprite" type="Sprite" parent="Pivot/Area2D"]
 texture = ExtResource( 2 )
@@ -194,5 +197,11 @@ texture = ExtResource( 2 )
 shape = SubResource( 6 )
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="TopAnchor" type="Position2D" parent="."]
+position = Vector2( 0, -966 )
+__meta__ = {
+"_gizmo_extents_": 40.0
+}
 [connection signal="animation_finished" from="Pivot/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
 [connection signal="animation_finished" from="Pivot/AnimationPlayerDamage" to="." method="_on_AnimationPlayer_animation_finished"]

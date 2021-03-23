@@ -30,3 +30,14 @@ const SCENE_PROPERTY = "Type"
 # These are number carrying properties, which we want to hide their label
 # when they're 0, to allow more space for other labels.
 const NUMBERS_HIDDEN_ON_0 := ["Cost","Power"]
+# The cards where their [SCENE_PROPERTY](#SCENE_PROPERTY) value is in this list
+# will not be shown in the deckbuilder.
+#
+# This is useful to prevent a whole class of cards from being shown in the
+# deckbuilder, without adding `_hide_in_deckbuilder` to each of them
+const TYPES_TO_HIDE_IN_DECKBUILDER := ["Token"]
+const EXPLANATIONS = {
+	"Tag 1": "Tag 1: You can add extra explanations for tags",
+	"Keyword 1": "Keyword 1: You can specify explanations for keywords that might appear in the text",
+	"Clarification A": "You can even provide longer clarification on card abilities"
+}

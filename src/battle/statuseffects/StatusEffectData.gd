@@ -1,4 +1,6 @@
 # Data container to define new status effects.
+# The status effect abstract base class StatusEffect is initialised from this data,
+# by way of the StatusEffectBuilder
 class_name StatusEffectData
 extends Resource
 

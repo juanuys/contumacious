@@ -6,8 +6,14 @@ extends Reference
 
 var costs_dry_run := false
 
-func _init(dry_run_req) -> void:
-	costs_dry_run = dry_run_req
+func _init(_dry_run) -> void:
+	costs_dry_run = _dry_run
+
+
+func _get_battler(subject):
+	return subject.get_parent().get_parent().get_parent()
+
+
 # This fuction executes custom scripts
 #
 # It relies on the definition of each script being based the object's name
@@ -16,23 +22,27 @@ func _init(dry_run_req) -> void:
 #
 # You can pass a predefined subject, but it's optional.
 func custom_script(script: ScriptObject) -> void:
-	var card: Card = script.owner_card
+	var card: Card = script.owner
 	var subjects: Array = script.subjects
-	# I don't like the extra indent caused by this if, 
-	# But not all object will be Card
-	# So I can't be certain the "card_name" var will exist
-	print_debug("custom script?")
-	match script.owner_card.card_name:
+	match script.owner.canonical_name:
 		"Elbow Bump":
-			# No demo cost-based custom scripts
-			print_debug("ELBOW CUMP")
 			if not costs_dry_run:
-				print_debug("ELBOW CUMP!")
+				print("CARD SCRIPT elbow bump")
+				for subject in subjects:
+					var battler = _get_battler(subject)
+					print("subject: %s" % battler)
+					var hit = Hit.new(50)
+					battler.take_hit(hit)
 		"Knee Bump":
-			print_debug("KNEE CUMP")
 			if not costs_dry_run:
-				print_debug("KNEE CUMP!")
+				print("CARD SCRIPT knee bump")
+				for subject in subjects:
+					var battler = _get_battler(subject)
+					print("subject: %s" % battler)
+					var hit = Hit.new(20)
+					battler.take_hit(hit)
 
+# warning-ignore:unused_argument
 func custom_alterants(script: ScriptObject) -> int:
 	var alteration := 0
 	return(alteration)

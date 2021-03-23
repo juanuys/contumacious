@@ -1,5 +1,19 @@
 # ScriptEngine
 
+Example:
+```
+"Card Name": {
+    "<card signal/trigger>": { // see "known_card_signals" var, or "alterants"
+        "<card state>": [ // board, hand, pile, or NONE
+            {                            \
+                "name": "custom_script",  \___ a "task" 
+                "subject": "target",      /
+            }                            /
+        ]
+    },
+}
+```
+
 ## "manual"
 
 From: https://github.com/db0/godot-card-game-framework/wiki/ScriptDefinitions

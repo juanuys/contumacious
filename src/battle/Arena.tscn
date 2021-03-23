@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/battle/Combat.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/backgrounds/train-interior.png" type="Texture" id=2]
+[ext_resource path="res://src/battle/Arena.gd" type="Script" id=3]
+
+[node name="Arena" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Backdrop" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Combat" parent="." instance=ExtResource( 1 )]

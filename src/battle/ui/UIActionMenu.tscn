@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/battle/ui/UIActionMenu.gd" type="Script" id=1]
+
+[node name="UIActionMenu" type="Control"]
+margin_left = 290.0
+margin_top = 492.0
+margin_right = 330.0
+margin_bottom = 532.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}

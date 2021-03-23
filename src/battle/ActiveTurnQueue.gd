@@ -26,6 +26,9 @@ var _is_player_playing := false
 # Stack of player-controlled battlers that have to take turns.
 var _queue_player := []
 
+# Stores a reference to the UIActionMenu scene. You have to assign it in the Inspector.
+export var UIActionMenuScene: PackedScene
+
 
 func _ready() -> void:
 	# to start the next turn.
@@ -154,9 +157,19 @@ func _play_turn(battler: Battler) -> void:
 		emit_signal("player_turn_finished")
 
 func _player_select_action_async(battler: Battler) -> ActionData:
-	# TODO get the played card
-	yield(get_tree(), "idle_frame")
-	return battler.actions[0]
+	
+	# yield(get_tree(), "idle_frame")
+	# return battler.actions[0]
+	
+	# Every time the player has to select an action in the turn loop, we instantiate the menu.
+	# TODO disable the menu, and let the player just play a card.
+	var action_menu: UIActionMenu = UIActionMenuScene.instance()
+	add_child(action_menu)
+	# Calling its `open` method makes it appear and populates it with action buttons.
+	action_menu.open(battler)
+	# We then wait for the player to select an action in the menu and to return it.
+	var data: ActionData = yield(action_menu, "action_selected")
+	return data
 
 
 func _player_select_targets_async(_action: ActionData, opponents: Array) -> Array:

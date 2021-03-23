@@ -123,7 +123,7 @@ export var mandatory_grid_name : String
 # If not set, will be set to the value of the Name label in the front.
 # if that is also not set, will be set.
 # to the human-readable value of the "name" node property.
-export var card_name : String setget set_card_name, get_card_name
+var canonical_name : String setget set_card_name, get_card_name
 # Contains the scene which has the Card Back design to use for this card type
 # It needs to be scene which uses a CardBack class script.
 export(PackedScene) var card_back_design : PackedScene
@@ -190,7 +190,7 @@ var _placement_slot : BoardPlacementSlot = null
 #
 # Each key is a ScriptingEngine reference, and each value is a dictionary
 # With the following keys:
-# * requesting_card: The card object which has requested this temp modifier
+# * requesting_object: The object which has requested this temp modifier
 # * modifer: A dictionary with all the modifications requested by this card
 #	Each key is a (numerical) property name,
 #	and value is the temp modifier requested for this property.
@@ -225,7 +225,7 @@ onready var _control = $Control
 onready var buttons = $Control/ManipulationButtons
 # The node which hosts all tokens belonging to this card
 # as well as the methods retrieve them and to to hide/show their drawer.
-onready var tokens = $Control/Tokens
+onready var tokens: TokenDrawer = $Control/Tokens
 # The node which controls the targeting arrow.
 onready var targeting_arrow = $TargetLine
 # The node which manipulates the highlight borders.
@@ -236,7 +236,7 @@ onready var highlight = $Control/Highlight
 func _ready() -> void:
 	set_card_size(card_size)
 	_init_card_layout()
-	# The below call ensures out card_name variable is set.
+	# The below call ensures out canonical_name variable is set.
 	# Normally the setup() function should be used to set it,
 	# but setting the name here as well ensures that a card can be also put on
 	# The board without calling setup() and then use its hardcoded labels
@@ -267,9 +267,9 @@ func _init_card_layout() -> void:
 
 
 # Ensures that the canonical card name is set in all fields which use it.
-#  var card_name, "Name" label and self.name should use the same string.
+#  var canonical_name, "Name" label and self.name should use the same string.
 func _init_card_name() -> void:
-	if not card_name:
+	if not canonical_name:
 		# If the variable has not been set on start
 		# But the Name label has been set, we set our name to that instead
 		if card_front.card_labels["Name"].text != "":
@@ -286,7 +286,7 @@ func _init_card_name() -> void:
 	else:
 		# If the variable has been set, we ensure label and node name
 		# are matching
-		set_card_name(card_name)
+		set_card_name(canonical_name)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -469,12 +469,12 @@ func _on_Card_mouse_exited() -> void:
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup() -> void:
-	# card_name needs to be setup before we call this function
-	set_card_name(card_name)
+	# canonical_name needs to be setup before we call this function
+	set_card_name(canonical_name)
 	# The properties of the card should be already stored in cfc
 	var read_properties: Dictionary
 	if state != CardState.VIEWPORT_FOCUS:
-		read_properties = cfc.card_definitions.get(card_name, {})
+		read_properties = cfc.card_definitions.get(canonical_name, {})
 	else:
 		read_properties = properties.duplicate()
 	for property in read_properties.keys():
@@ -644,7 +644,7 @@ func get_property_and_alterants(property: String,
 			# Each value in the modifier_details dictionary is another dictionary
 			# Where the key is the card object which has added this modifier
 			# And the value is the modifier this specific card added to the total
-			temp_modifiers.modifier_details[modifiers_dict.requesting_card] =\
+			temp_modifiers.modifier_details[modifiers_dict.requesting_object] =\
 					modifiers_dict.modifier.get(property,0)
 		property_value += temp_modifiers.value_modification
 		# We use this flag to avoid an alteranty which alters get_property
@@ -672,7 +672,7 @@ func get_property_and_alterants(property: String,
 
 
 # Sets the card size and adjusts all nodes depending on it.
-func set_card_size(value: Vector2) -> void:
+func set_card_size(value: Vector2, ignore_area = false) -> void:
 	card_size = value
 	_control.rect_min_size = value
 	# We set the card to always pivot from its center.
@@ -684,8 +684,12 @@ func set_card_size(value: Vector2) -> void:
 	# correctly when hovering over the card.
 	highlight.rect_min_size = value + Vector2(6, 6)
 	highlight.rect_position = Vector2(-3, -3)
-	$CollisionShape2D.shape.extents = value / 2
-	$CollisionShape2D.position = value / 2
+	# This switch is set to true when resizing dupes
+	# To avoid resizing all the area2D of all cards
+	# since they share the resource.
+	if not ignore_area:
+		$CollisionShape2D.shape.extents = value / 2
+		$CollisionShape2D.position = value / 2
 
 
 # Setter for _is_attachment
@@ -826,34 +830,34 @@ func get_is_viewed() -> bool:
 	return is_viewed
 
 
-# Setter for card_name
+# Setter for canonical_name
 # Also changes the card label and the node name
 func set_card_name(value : String) -> void:
 	# if the card_front.card_labels variable is not set it means ready() has not
 	# run yet, so we just store the card name for later.
 	if not card_front:
-		card_name = value
+		canonical_name = value
 	else:
 		# We set all areas of the card to match the canonical name.
 		var name_label = card_front.card_labels["Name"]
 		card_front.set_label_text(name_label,value)
 		name = value
-		card_name = value
+		canonical_name = value
 		properties["Name"] = value
 
 
-# Getter for card_name
+# Getter for canonical_name
 func get_card_name() -> String:
-	return card_name
+	return canonical_name
 
 
-# Overwrites the built-in set name, so that it also sets card_name
+# Overwrites the built-in set name, so that it also sets canonical_name
 #
-# It's preferrable to set card_name instead.
+# It's preferrable to set canonical_name instead.
 func set_name(value : String) -> void:
 	.set_name(value)
 	card_front.card_labels["Name"].text = value
-	card_name = value
+	canonical_name = value
 
 # Setter for card_rotation.
 #
@@ -1231,7 +1235,7 @@ func execute_scripts(
 	if cfc.game_paused:
 		return
 	common_pre_execution_scripts(trigger)
-	var card_scripts = retrieve_card_scripts(trigger)
+	var card_scripts = retrieve_scripts(trigger)
 	# I use this spot to add a breakpoint when testing script behaviour
 	# especially on filters
 	if _debugger_hook:
@@ -1255,7 +1259,7 @@ func execute_scripts(
 	# Then you'd include an "is_optional_board" key at the same level as "board"
 	var confirm_return = CFUtils.confirm(
 		card_scripts,
-		card_name,
+		canonical_name,
 		trigger,
 		state_exec)
 	if confirm_return is GDScriptFunctionState: # Still working.
@@ -1269,7 +1273,7 @@ func execute_scripts(
 	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
 		var choices_menu = _CARD_CHOICES_SCENE.instance()
-		choices_menu.prep(self.card_name,state_scripts)
+		choices_menu.prep(canonical_name,state_scripts)
 		# We have to wait until the player has finished selecting an option
 		yield(choices_menu,"id_pressed")
 		# If the player just closed the pop-up without choosing
@@ -1326,7 +1330,7 @@ func execute_scripts(
 #
 # Returns a dictionary of card scripts for this specific card
 # based on the current trigger.
-func retrieve_card_scripts(trigger: String) -> Dictionary:
+func retrieve_scripts(trigger: String) -> Dictionary:
 	var found_scripts: Dictionary
 	# If scripts have been defined directly in this Card object
 	# They take precedence over CardScriptDefinitions.gd
@@ -1339,7 +1343,7 @@ func retrieve_card_scripts(trigger: String) -> Dictionary:
 		# This retrieves all the script from the card, stored in cfc
 		# The seeks in them the specific trigger we're using in this
 		# execution
-		found_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{}).duplicate()
+		found_scripts = cfc.set_scripts.get(canonical_name,{}).get(trigger,{}).duplicate()
 	return(found_scripts)
 
 
@@ -1679,7 +1683,7 @@ func common_post_execution_scripts(trigger: String) -> void:
 # scripts on the card during an attempt to drag it from hand.
 func _has_targeting_cost_hand_script() -> bool:
 	var ret := false
-	var hand_scripts = retrieve_card_scripts("manual").get("hand",[])
+	var hand_scripts = retrieve_scripts("manual").get("hand",[])
 	# We don't check multiple choice cards
 	if hand_drag_starts_targeting and typeof(hand_scripts) == TYPE_ARRAY:
 		for task in hand_scripts:
@@ -2298,7 +2302,15 @@ func _process_card_state() -> void:
 			targeting_arrow.complete_targeting()
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
-			scale = Vector2(1.5,1.5)
+			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+				scale = Vector2(1.5,1.5)
+			else:
+				# We need to reset its scale, 
+				# in case it was already scaled due to being on the table etc.
+				scale = Vector2(1,1)
+				set_card_size(CFConst.CARD_SIZE*1.5, true)
+				card_front.scale_to(1.5)
+				card_back.scale_to(1.5)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
 			if not is_faceup:
@@ -2314,7 +2326,11 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
-			scale = Vector2(2,2)
+			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+				scale = Vector2(2,2)
+			else:
+				set_card_size(CFConst.CARD_SIZE*2)
+				card_front.scale_to(2)
 
 
 
@@ -2459,7 +2475,6 @@ func _recalculate_rotation(index_diff = null)-> float:
 	return(calculated_rotation)
 
 
-
 # Ensures that all filters requested by the script are respected
 #
 # Will set is_valid to false if any filter does not match reality
@@ -2484,4 +2499,5 @@ func _on_Back_resized() -> void:
 	# At the loop at line 91, is active
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
+#		print_debug($Control/Back.rect_size) # Replace with function body.
 

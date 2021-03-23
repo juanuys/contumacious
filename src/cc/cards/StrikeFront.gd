@@ -1,1 +1,1 @@
-extends "res://src/cc/CardFront.gd"
+extends "res://src/cc/DuplicateCustomCGFCardFront.gd"
