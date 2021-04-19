@@ -1,12 +1,29 @@
-[gd_scene format=2]
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/icons/icon_frame.png" type="Texture" id=1]
+[ext_resource path="res://assets/characters/icons/fenyx.png" type="Texture" id=2]
+[ext_resource path="res://src/battle/ui/turn_bar/UIBattlerIcon.gd" type="Script" id=3]
+[ext_resource path="res://assets/characters/icons/bruli.png" type="Texture" id=4]
 
 [node name="UIBattlerIcon" type="TextureRect"]
 margin_right = 40.0
 margin_bottom = 40.0
+rect_scale = Vector2( 0.15, 0.15 )
+texture = ExtResource( 1 )
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+icon = ExtResource( 4 )
+type = 1
 
 [node name="Icon" type="TextureRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 54.0
+margin_top = 47.0
+margin_right = -54.0
+margin_bottom = -46.0
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 6
