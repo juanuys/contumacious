@@ -77,3 +77,5 @@ func _on_UIActionButton_button_pressed(action: ActionData) -> void:
 # with the arrow. But the arrow's just a visual cue.
 func _on_UIActionButton_focus_entered(button: TextureButton, battler_display_name: String, energy_cost: int) -> void:
 	_select_arrow.move_to(button.rect_global_position + Vector2(0.0, button.rect_size.y / 2.0))
+	
+	Events.emit_signal("combat_action_hovered", battler_display_name, energy_cost)

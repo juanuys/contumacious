@@ -1,0 +1,58 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://src/battle/ui/battler_hud/hud-bg.png" type="Texture" id=1]
+[ext_resource path="res://src/battle/ui/battler_hud/energy_bar/UIEnergyBar.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/ui/theme/combat_ui_theme.tres" type="Theme" id=3]
+[ext_resource path="res://src/battle/ui/battler_hud/life_bar/UILifeBar.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/battle/ui/battler_hud/UIBattlerHUD.gd" type="Script" id=5]
+
+[node name="UIBattlerHUD" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_scale = Vector2( 0.5, 0.5 )
+theme = ExtResource( 3 )
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BG" type="TextureRect" parent="."]
+modulate = Color( 1, 1, 1, 0.317647 )
+margin_right = 1080.0
+margin_bottom = 350.0
+theme = ExtResource( 3 )
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
+
+[node name="UILifeBar" parent="." instance=ExtResource( 4 )]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -210.228
+margin_top = 111.261
+margin_right = 115.772
+margin_bottom = 151.261
+rect_scale = Vector2( 3, 3 )
+
+[node name="UIEnergyBar" parent="." instance=ExtResource( 2 )]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -177.736
+margin_top = 207.464
+margin_right = 6177.26
+margin_bottom = 719.464
+rect_scale = Vector2( 0.15, 0.15 )
+
+[node name="Label" type="Label" parent="."]
+self_modulate = Color( 0.780392, 0.780392, 0.780392, 1 )
+margin_left = 68.0842
+margin_top = 50.8308
+margin_right = 167.084
+margin_bottom = 90.8308
+text = "Fenyx"

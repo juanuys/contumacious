@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://src/battle/ui/UIActionMenu.gd" type="Script" id=1]
+[ext_resource path="res://src/battle/ui/action_menu/UIActionMenu.gd" type="Script" id=1]
 
 [node name="UIActionMenu" type="Control"]
 margin_left = 290.0

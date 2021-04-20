@@ -369,10 +369,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/battle/command/Types.gd"
 }, {
-"base": "Control",
+"base": "Reference",
 "class": "UIActionMenu",
 "language": "GDScript",
-"path": "res://src/battle/ui/UIActionMenu.gd"
+"path": "res://src/battle/ui/action_menu/UIActionMenu.gd"
+}, {
+"base": "TextureRect",
+"class": "UIBattlerHUD",
+"language": "GDScript",
+"path": "res://src/battle/ui/battler_hud/UIBattlerHUD.gd"
 }, {
 "base": "TextureRect",
 "class": "UIBattlerIcon",
@@ -463,6 +468,7 @@ _global_script_class_icons={
 "TokenDrawer": "",
 "Types": "",
 "UIActionMenu": "",
+"UIBattlerHUD": "",
 "UIBattlerIcon": "",
 "ViewportCardFocus": "",
 "perMessage": ""
@@ -477,6 +483,7 @@ config/icon="res://icon.png"
 [autoload]
 
 cfc="*res://src/core/CFControl.gd"
+Events="*res://src/Events.gd"
 
 [display]
 

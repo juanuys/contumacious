@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/battle/ui/UIActionList.gd" type="Script" id=1]
-[ext_resource path="res://src/battle/ui/UIMenuSelectArrow.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/battle/ui/action_menu/UIActionList.gd" type="Script" id=1]
+[ext_resource path="res://src/battle/ui/action_menu/UIMenuSelectArrow.tscn" type="PackedScene" id=2]
 
 [node name="UIActionList" type="VBoxContainer"]
 margin_right = 40.0

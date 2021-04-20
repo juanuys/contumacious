@@ -22,6 +22,7 @@ func _get_battler(subject):
 #
 # You can pass a predefined subject, but it's optional.
 func custom_script(script: ScriptObject) -> void:
+	Events.emit_signal("player_target_selection_done")
 	var card: Card = script.owner
 	var subjects: Array = script.subjects
 	match script.owner.canonical_name:

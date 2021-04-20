@@ -122,6 +122,11 @@ func _play_turn(battler: Battler) -> void:
 				targets = yield(
 					_player_select_targets_async(action_data, potential_targets), "completed"
 				)
+				
+				# We want to clear the energy cost preview every 
+				# time the player finished using the selection arrow.
+				Events.emit_signal("player_target_selection_done")
+				
 			# If the player selected a correct action and target, we can break
 			# out of the loop. I'm using a variable here to make the code
 			# readable and clear. You could write a `while true` loop and use
