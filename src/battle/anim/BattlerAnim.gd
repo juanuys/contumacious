@@ -26,6 +26,7 @@ onready var anim_player_damage: AnimationPlayer = $Pivot/AnimationPlayerDamage
 onready var tween: Tween = $Tween
 onready var _anchor_front: Position2D = $FrontAnchor
 onready var _anchor_top: Position2D = $TopAnchor
+onready var _anchor_bottom: Position2D = $BottomAnchor
 
 func _ready() -> void:
 	_position_start = position
@@ -99,3 +100,6 @@ func get_front_anchor_global_position() -> Vector2:
 func get_top_anchor_global_position() -> Vector2:
 	return _anchor_top.global_position
 
+func get_bottom_anchor_global_position() -> Vector2:
+	return _anchor_bottom.global_position
+	

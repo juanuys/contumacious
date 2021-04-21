@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://src/battle/ui/action_menu/UIActionMenu.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/battle/ActiveTurnQueue.gd" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://src/battle/battlers/BattlerAntagonist.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/battle/Combat.gd" type="Script" id=8]
 [ext_resource path="res://src/battle/ui/battler_hud/UIBattlerHUDList.tscn" type="PackedScene" id=9]
+[ext_resource path="res://src/battle/ui/damage_labels/UIDamageLabelBuilder.tscn" type="PackedScene" id=10]
 
 [node name="Combat" type="Node2D"]
 script = ExtResource( 8 )
@@ -35,3 +36,5 @@ is_party_member = true
 
 [node name="UIBattlerHUDList" parent="UI" instance=ExtResource( 9 )]
 margin_left = -574.0
+
+[node name="UIDamageLabelBuilder" parent="UI" instance=ExtResource( 10 )]

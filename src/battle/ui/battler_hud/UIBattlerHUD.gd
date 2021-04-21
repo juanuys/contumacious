@@ -1,6 +1,6 @@
 # Displays a party member's name, health, and energy.
 class_name UIBattlerHUD
-extends TextureRect
+extends Position2D
 
 onready var _life_bar: TextureProgress = $UILifeBar
 onready var _energy_bar := $UIEnergyBar
@@ -24,6 +24,8 @@ func setup(battler: Battler) -> void:
 
 	stats.connect("health_changed", self, "_on_BattlerStats_health_changed")
 	stats.connect("energy_changed", self, "_on_BattlerStats_energy_changed")
+	
+	self.scale = Vector2(0.25, 0.25)
 
 
 # We control the health in the life bar from this node. All we have to do is update its value.

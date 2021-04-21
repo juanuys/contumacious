@@ -4,6 +4,7 @@ extends Node2D
 onready var active_turn_queue := $ActiveTurnQueue
 onready var ui_turn_bar := $UI/UITurnBar
 onready var ui_battler_hud_list := $UI/UIBattlerHUDList
+onready var ui_damage_label_builder := $UI/UIDamageLabelBuilder
 
 # We set up the turn bar when the node is ready, which ensures all its children also are ready.
 func _ready() -> void:
@@ -16,5 +17,8 @@ func _ready() -> void:
 			in_party.append(battler)
 			
 	ui_turn_bar.setup(active_turn_queue.battlers)
-	ui_battler_hud_list.setup(in_party)
-
+	
+	# ui_battler_hud_list.setup(in_party)
+	ui_battler_hud_list.setup(battlers)
+	
+	ui_damage_label_builder.setup(battlers)

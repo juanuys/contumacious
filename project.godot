@@ -369,12 +369,12 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/battle/command/Types.gd"
 }, {
-"base": "Reference",
+"base": "Control",
 "class": "UIActionMenu",
 "language": "GDScript",
 "path": "res://src/battle/ui/action_menu/UIActionMenu.gd"
 }, {
-"base": "TextureRect",
+"base": "Position2D",
 "class": "UIBattlerHUD",
 "language": "GDScript",
 "path": "res://src/battle/ui/battler_hud/UIBattlerHUD.gd"
@@ -383,6 +383,16 @@ _global_script_classes=[ {
 "class": "UIBattlerIcon",
 "language": "GDScript",
 "path": "res://src/battle/ui/turn_bar/UIBattlerIcon.gd"
+}, {
+"base": "Node2D",
+"class": "UIDamageLabel",
+"language": "GDScript",
+"path": "res://src/battle/ui/damage_labels/UIDamageLabel.gd"
+}, {
+"base": "Node2D",
+"class": "UIDamageLabelBuilder",
+"language": "GDScript",
+"path": "res://src/battle/ui/damage_labels/UIDamageLabelBuilder.gd"
 }, {
 "base": "Node2D",
 "class": "ViewportCardFocus",
@@ -470,6 +480,8 @@ _global_script_class_icons={
 "UIActionMenu": "",
 "UIBattlerHUD": "",
 "UIBattlerIcon": "",
+"UIDamageLabel": "",
+"UIDamageLabelBuilder": "",
 "ViewportCardFocus": "",
 "perMessage": ""
 }
