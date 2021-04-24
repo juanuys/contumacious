@@ -164,7 +164,6 @@ func take_hit(hit: Hit) -> void:
 		emit_signal("damage_taken", hit.damage)
 		# If the hit comes with an effect, we apply it to the battler.
 		if hit.effect:
-			print("<< taking damage from effect")
 			_apply_status_effect(hit.effect)
 	else:
 		emit_signal("hit_missed")
@@ -191,7 +190,8 @@ func act(action) -> void:
 	battler_anim.move_back()
 	# We reset the `_readiness`. The value can be greater than zero,
 	# depending on the action.
-	_set_readiness(action.get_readiness_saved())
+	var readiness_saved = action.get_readiness_saved()
+	_set_readiness(readiness_saved)
 	if is_active:
 		set_process(true)
 	# We emit our new signal, indicating the end of a turn for a player-controlled character.

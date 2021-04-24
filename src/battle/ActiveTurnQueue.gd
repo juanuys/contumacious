@@ -70,6 +70,8 @@ func _on_Battler_ready_to_act(battler: Battler) -> void:
 	else:
 		_play_turn(battler)
 
+# TODO cc: turnqueue to deal more cards after every turn so player
+# always has N cards in hand.
 func _play_turn(battler: Battler) -> void:
 	battler.stats.energy += 1
 	

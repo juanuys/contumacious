@@ -15,4 +15,4 @@ stats = ExtResource( 3 )
 [node name="StatusEffectContainer" type="Node" parent="."]
 script = ExtResource( 4 )
 
-[connection signal="animation_finished" from="." to="." method="_on_BattlerAnim_animation_finished"]
+[connection signal="animation_finished" from="BattlerAnim" to="." method="_on_BattlerAnim_animation_finished"]

@@ -19,7 +19,6 @@ func _apply_async() -> bool:
 	# a `Battler.play()` method instead to encapsulate it completely, but the action
 	# is an object representing a method call on the battler, in a sense.
 	var anim = _actor.battler_anim
-
 	# We apply the action to each target so attacks work both for single and multiple targets.
 	for target in _targets:
 		# We use the `StatusEffectBuilder` to instantiate the right effect.
