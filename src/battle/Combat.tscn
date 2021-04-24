@@ -35,6 +35,5 @@ is_party_member = true
 [node name="UITurnBar" parent="UI" instance=ExtResource( 4 )]
 
 [node name="UIBattlerHUDList" parent="UI" instance=ExtResource( 9 )]
-margin_left = -574.0
 
 [node name="UIDamageLabelBuilder" parent="UI" instance=ExtResource( 10 )]

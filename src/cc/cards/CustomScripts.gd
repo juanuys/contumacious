@@ -11,6 +11,34 @@ func _init(_dry_run) -> void:
 
 
 func _get_battler(subject):
+	"""
+	This debug outputs:
+		
+		subject: Area2D
+		parent: Pivot
+		+ parent: BattlerAnim
+		+ + parent: BattlerAntagonist
+		+ + + parent: ActiveTurnQueue
+		+ + + + parent: Combat
+
+	"""
+	var debug = false
+	if debug:
+		print("""
+		subject: %s
+		parent: %s
+		+ parent: %s
+		+ + parent: %s
+		+ + + parent: %s
+		+ + + + parent: %s
+		""" % [
+			subject.name,
+			subject.get_parent().name,
+			subject.get_parent().get_parent().name,
+			subject.get_parent().get_parent().get_parent().name,
+			subject.get_parent().get_parent().get_parent().get_parent().name,
+			subject.get_parent().get_parent().get_parent().get_parent().get_parent().name,
+		])
 	return subject.get_parent().get_parent().get_parent()
 
 

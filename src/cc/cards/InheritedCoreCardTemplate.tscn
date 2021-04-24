@@ -3,7 +3,7 @@
 [ext_resource path="res://src/core/CardTemplate.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/cc/DuplicateCustomCGFCardManipulationButton.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/cc/MyCardTemplate.gd" type="Script" id=3]
-[ext_resource path="res://src/cc/MyTargetingArrow.gd" type="Script" id=4]
+[ext_resource path="res://src/cc/cards/DuplicateCoreTargetingArrow.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/cc/DuplicateCustomCGFCardFront.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/cc/DuplicateCustomCGFCardBack.tscn" type="PackedScene" id=6]
 
@@ -11,9 +11,7 @@
 script = ExtResource( 3 )
 card_back_design = ExtResource( 6 )
 card_front_design = ExtResource( 5 )
+targeting_arrow_scene = ExtResource( 4 )
 
 [node name="ManipulationButtons" parent="Control" index="4"]
 manipulation_button = ExtResource( 2 )
-
-[node name="TargetLine" parent="." index="3"]
-script = ExtResource( 4 )
