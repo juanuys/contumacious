@@ -62,7 +62,6 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 	all_tasks_completed = false
 	run_type = _run_type
 	var prev_subjects := []
-	print(">> main engine")
 	for task in scripts_queue:
 		# We put it into another variable to allow Static Typing benefits
 		var script: ScriptTask = task
@@ -148,8 +147,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
 			cfc.card_temp_property_modifiers.erase(self)
 			for card in script.subjects:
-				if not card.get("temp_properties_modifiers") == null:
-					card.temp_properties_modifiers.erase(self)
+				card.temp_properties_modifiers.erase(self)
 #	print_debug(str(card_owner) + 'Scripting: All done!') # Debug
 	all_tasks_completed = true
 	emit_signal("tasks_completed")

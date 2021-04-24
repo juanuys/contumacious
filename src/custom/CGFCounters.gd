@@ -19,8 +19,8 @@ func _ready() -> void:
 		"credits": {
 			"CounterTitle": "Available Credits: ",
 			"Value": 100},
-#		"research":{
-#			 "CounterTitle": "Research: ",
-#			"Value": 0},
+		"research":{
+			 "CounterTitle": "Research: ",
+			"Value": 0},
 	}
 	spawn_needed_counters()

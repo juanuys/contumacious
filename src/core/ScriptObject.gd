@@ -231,15 +231,13 @@ func _initiate_card_targeting() -> Card:
 	# We wait a centisecond, to prevent the card's _input function from seeing
 	# The double-click which started the script and immediately triggerring
 	# the target completion
-	print("_initiate_card_targeting")
 	yield(owner.get_tree().create_timer(0.1), "timeout")
 	owner.targeting_arrow.initiate_targeting()
 	# We wait until the targetting has been completed to continue
-	var target = yield(owner.targeting_arrow,"target_selected")
-	# var target = owner.targeting_arrow.target_card
-	print(">> target acquired ", target)
-	owner.targeting_arrow.target_card = null
-	#owner_card.target_card = null
+	yield(owner.targeting_arrow,"target_selected")
+	var target = owner.targeting_arrow.target_object
+	owner.targeting_arrow.target_object = null
+	#owner_card.target_object = null
 	return(target)
 
 
