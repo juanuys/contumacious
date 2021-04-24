@@ -4,16 +4,18 @@ class_name BattlerStats
 
 # Emitted when a character has no `health` left.
 signal health_depleted
-# Emitted every time the value of `health` changes.
-# We will use it to animate the life bar.
-signal health_changed(old_value, new_value)
-# Same as above, but for the `energy`.
-signal energy_changed(old_value, new_value)
+signal stat_changed(stat, old_value, new_value)
 
 
 # The battler's maximum health.
 export var max_health := 100.0
 export var max_energy := 6
+
+func get_max_health() -> float:
+	return max_health
+
+func get_max_energy() -> int:
+	return max_energy
 
 # Note that due to how Resources work, in Godot 3.2, health will not have a
 # value of `max_health`. This is why we have the function `reinitialize()`
@@ -57,7 +59,7 @@ func set_health(value: float) -> void:
 	# We use `clamp()` to ensure the value is always in the [0.0, max_health]
 	# interval.
 	health = clamp(value, 0.0, max_health)
-	emit_signal("health_changed", health_previous, health)
+	emit_signal("stat_changed", "health", health_previous, health)
 	# As we are working with decimal values, using the `==` operator for
 	# comparisons isn't safe. Instead, we need to call `is_equal_approx()`.
 	if is_equal_approx(health, 0.0):
@@ -71,7 +73,7 @@ func set_energy(value: int) -> void:
 	# an integer, which will trigger a warning. I prefer to always do it
 	# explicitly to remind myself that I'm working with integers here.
 	energy = int(clamp(value, 0.0, max_energy))
-	emit_signal("energy_changed", energy_previous, energy)
+	emit_signal("stat_changed", "energy", energy_previous, energy)
 
 
 # attack/defense will be replaced with the values in the cards.

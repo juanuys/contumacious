@@ -28,8 +28,8 @@ func setup(battlers: Array) -> void:
 		# We get to use the `Battler.readiness_changed` signal again to move the icons along the turn bar.
 		# Once again, we bind the icon to the callback for each battler, so we don't have to worry
 		# about which battler corresponds to which icon later.
-		battler.connect("readiness_changed", self, "_on_Battler_readiness_changed", [icon])
 		_background.add_child(icon)
+		battler.connect("readiness_changed", self, "_on_Battler_readiness_changed", [icon])
 
 
 # Creates a new instance of `UIBattlerIcon`, initializes it, adds it as a child of `background`, and
@@ -62,7 +62,7 @@ func fade_out() -> void:
 # This is where we update the position of each icon. Every time a battler emits the
 # "readiness_changed" signal, we use this value to snap the corresponding icon to a new location.
 func _on_Battler_readiness_changed(readiness: float, icon: UIBattlerIcon) -> void:
-	# We call the `UIBattlerIcon.snap()` function we defined previously. I recommend using a
-	# function or dedicated property here because polishing the game, you might want to animate the
-	# icon's movement.
+	# We call the `UIBattlerIcon.snap()` function we defined previously.
+	# We can use a function or dedicated property here because polishing the game,
+	# we might want to animate the icon's movement.
 	icon.snap(readiness / 100.0)

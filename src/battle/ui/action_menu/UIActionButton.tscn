@@ -44,4 +44,5 @@ margin_top = 7.0
 margin_right = 164.0
 margin_bottom = 47.0
 text = "Action"
+
 [connection signal="pressed" from="." to="." method="_on_pressed"]

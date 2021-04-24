@@ -1,3 +1,9 @@
+# Abstract base class for all combat actions.
+# Constructed from an [ActionData] resource
+# Actions take an actor and an array of targets. The actor applies the action to the targets, which involves sequencing and playing animations.
+# Because of that, actions rely on coroutines and must emit the signal "finished" when the action is over.
+# See derived classes like [AttackAction] for concrete examples.
+# Implements the Command pattern. For more information, see http://gameprogrammingpatterns.com/command.html
 class_name Action
 # Reference is the default type you extend in Godot, even if you omit this line.
 # Godot allocates and frees instances of a Reference from memory for you.

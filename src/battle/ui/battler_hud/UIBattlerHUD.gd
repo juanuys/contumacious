@@ -19,23 +19,24 @@ func setup(battler: Battler) -> void:
 
 	# We extract the health and energy from the stats.
 	var stats: BattlerStats = battler.stats
-	_life_bar.setup(stats.health, stats.max_health)
-	_energy_bar.setup(stats.max_energy, stats.energy)
+	_life_bar.setup(stats.health, stats.get_max_health())
+	_energy_bar.setup(stats.get_max_energy(), stats.energy)
 
-	stats.connect("health_changed", self, "_on_BattlerStats_health_changed")
-	stats.connect("energy_changed", self, "_on_BattlerStats_energy_changed")
+	stats.connect("stat_changed", self, "_on_BattlerStats_stat_changed")
 	
 	self.scale = Vector2(0.25, 0.25)
 
 
 # We control the health in the life bar from this node. All we have to do is update its value.
-func _on_BattlerStats_health_changed(_old_value: float, new_value: float) -> void:
-	_life_bar.target_value = new_value
-
-
-# Same for the energy.
-func _on_BattlerStats_energy_changed(_old_value: float, new_value: float) -> void:
-	_energy_bar.value = new_value
+func _on_BattlerStats_stat_changed(stat: String, _old_value: float, new_value: float) -> void:
+	print("hud: stat changed %s" % stat)
+	match stat:
+		"health":
+			_life_bar.target_value = new_value
+		"energy":
+			_energy_bar.value = new_value
+		_:
+			print("unknown stat change: %s" % stat)
 
 
 func _on_Events_combat_action_hovered(battler_name: String, energy_cost: int) -> void:

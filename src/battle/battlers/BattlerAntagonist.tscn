@@ -18,4 +18,5 @@ ui_data = ExtResource( 3 )
 
 [node name="StatusEffectContainer" type="Node" parent="."]
 script = ExtResource( 5 )
+
 [connection signal="animation_finished" from="." to="." method="_on_BattlerAnim_animation_finished"]

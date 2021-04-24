@@ -11,6 +11,8 @@ const COLOR_TRANSPARENT := Color(1.0, 1.0, 1.0, 0.0)
 # use constants instead.
 export var color_damage := Color("#b0305c")
 export var color_heal := Color("#3ca370")
+export var color_armor := Color("#f2a65e")
+export var color_energy := Color("#4da6ff")
 
 # The actual color applied to the Label node's text via its `modulate` property.
 var _color: Color setget _set_color
@@ -35,7 +37,11 @@ func setup(type: int, start_global_position: Vector2, amount: int) -> void:
 			_set_color(color_damage)
 		Types.HEAL:
 			_set_color(color_heal)
-
+		Types.ENERGY:
+			_set_color(color_energy)
+		Types.ARMOR:
+			_set_color(color_armor)
+			
 
 func _ready() -> void:
 	_label.text = str(_amount)

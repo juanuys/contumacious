@@ -10,7 +10,7 @@ signal animation_finished(name)
 signal triggered
 
 
-# There are two directions a battler can look: left or right. This enum represents that.
+# There are two directions a battler can look: left or right.
 enum Direction { LEFT, RIGHT }
 
 # Controls the direction in which the battler looks and moves.

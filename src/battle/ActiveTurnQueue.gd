@@ -42,7 +42,7 @@ func _ready() -> void:
 		# binding a reference to the battler to the callback.
 		battler.connect("ready_to_act", self, "_on_Battler_ready_to_act", [battler])
 
-		if battler.is_player_controlled():
+		if battler.is_party_member:
 			_party_members.append(battler)
 		else:
 			_opponents.append(battler)
@@ -71,14 +71,11 @@ func _on_Battler_ready_to_act(battler: Battler) -> void:
 		_play_turn(battler)
 
 func _play_turn(battler: Battler) -> void:
+	battler.stats.energy += 1
+	
 	var action_data: ActionData
 	var targets := []
 	
-	battler.stats.energy += 1
-	# Makes every battler step forward at the start of their turn.
-	# With player-controlled battlers, this helps to highlight the active character.
-	battler.is_selected = true
-
 	# The code below makes a list of selectable targets using `Battler.is_selectable`
 	var potential_targets := []
 	var opponents := _opponents if battler.is_party_member else _party_members
@@ -90,6 +87,7 @@ func _play_turn(battler: Battler) -> void:
 		# We'll use the selection to move playable battlers
 		# forward. This value will also make the Heads-Up Display (HUD) for this
 		# battler move forward.
+		# With player-controlled battlers, this helps to highlight the active character.		
 		battler.is_selected = true
 		# This line slows down time while the player selects an action and
 		# target. The function `set_time_scale()` recursively assigns that value
@@ -113,6 +111,7 @@ func _play_turn(battler: Battler) -> void:
 			# The player has to first select an action, then a target.
 			# We store the selected action in the `action_data` variable defined
 			# at the start of the function.
+			# TODO cc: get action_data from played card.
 			action_data = yield(_player_select_action_async(battler), "completed")
 			# If an action applies an effect to the battler only, we
 			# automatically set it as the target.
@@ -139,10 +138,6 @@ func _play_turn(battler: Battler) -> void:
 		battler.is_selected = false
 	
 	else:
-		# TODO hard-coded for now
-		# action_data = battler.actions[0]
-		# targets = [potential_targets[0]]
-		
 		# Letting the AI choose by calling its `choose()` method.
 		var result: Dictionary = battler.get_ai().choose()
 		action_data = result.action
@@ -167,7 +162,7 @@ func _player_select_action_async(battler: Battler) -> ActionData:
 	# return battler.actions[0]
 	
 	# Every time the player has to select an action in the turn loop, we instantiate the menu.
-	# TODO disable the menu, and let the player just play a card.
+	# TODO cc: disable the menu, and let the player just play a card.
 	var action_menu: UIActionMenu = UIActionMenuScene.instance()
 	add_child(action_menu)
 	# Calling its `open` method makes it appear and populates it with action buttons.
@@ -178,7 +173,8 @@ func _player_select_action_async(battler: Battler) -> ActionData:
 
 
 func _player_select_targets_async(_action: ActionData, opponents: Array) -> Array:
-	# TODO get the opponent targetted by telegraphing arrow
+	# TODO cc: get the opponent targetted by telegraphing arrow
+	# (reminder: the old jrpg game had targeting arrows too)
 	yield(get_tree(), "idle_frame")
 	if len(opponents) > 0:
 		return [opponents[0]]

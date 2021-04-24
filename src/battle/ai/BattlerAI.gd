@@ -107,7 +107,7 @@ func _get_battler_with_lowest_health(battlers: Array) -> Battler:
 func _is_health_below(battler: Battler, ratio: float) -> bool:
 	# We ensure the ratio is in the [0.0, 1.0] range.
 	ratio = clamp(ratio, 0.0, 1.0)
-	return battler.stats.health < battler.stats.max_health * ratio
+	return battler.stats.health < battler.stats.get_max_health() * ratio
 
 
 # Returns a member of the `HealthStatus` enum depending of the agent's current health ratio.
@@ -194,7 +194,7 @@ func _choose() -> Dictionary:
 	else:
 		action = _choose_action(battle_info)
 
-	# There's a special case with actions, if it's targeting its user, we don't need
+	# There's a special case with actions: if it's targeting its user, we don't need
 	# to choose a target.
 	if action.is_targeting_self:
 		targets = [_actor]

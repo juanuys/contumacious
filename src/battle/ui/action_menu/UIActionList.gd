@@ -69,7 +69,7 @@ func set_is_disabled(value: bool) -> void:
 # "action_selected" signal.
 func _on_UIActionButton_button_pressed(action: ActionData) -> void:
 	set_is_disabled(true)
-	# TODO this will ultimately be called from the card scripts
+	# TODO cc: this will ultimately be called from the card scripts
 	emit_signal("action_selected", action)
 
 

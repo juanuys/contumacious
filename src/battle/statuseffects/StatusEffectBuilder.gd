@@ -9,19 +9,19 @@ extends Reference
 # because our content is a map of types, but you may want to use constant case instead:
 # `STATUS_EFFECTS`.
 const StatusEffects := {
-    haste = StatusEffectHaste,
-    slow = StatusEffectSlow,
-    bug = StatusEffectBug,
+	haste = StatusEffectHaste,
+	slow = StatusEffectSlow,
+	bug = StatusEffectBug,
 }
 
 # The class only exposes a function that creates and returns a new status effect based on the data
 # we provide.
 static func create_status_effect(target, data):
-    # We can use the function to run through some `assert()` or return early if the input parameters
-    # are incorrect.
-    if not data:
-        return null
-    # You can store a reference to a class in a variable!
-    var effect_class = StatusEffects[data.effect]
-    var effect: StatusEffect = effect_class.new(target, data)
-    return effect
+	# We can use the function to run through some `assert()` or return early if the input parameters
+	# are incorrect.
+	if not data:
+		return null
+	# You can store a reference to a class in a variable!
+	var effect_class = StatusEffects[data.effect]
+	var effect: StatusEffect = effect_class.new(target, data)
+	return effect

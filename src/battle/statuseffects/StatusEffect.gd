@@ -1,5 +1,6 @@
 # Represents and applies the effect of a given status to a battler.
 # The status takes effect as soon as the node is added to the scene tree.
+# @tags: virtual
 class_name StatusEffect
 # Our effects extend `Node` so we can use the `_process()`
 # callback to update the effect on every frame.
@@ -15,6 +16,7 @@ var is_ticking := false
 var ticking_interval := 1.0
 # If `true`, the effect is active and is applying.
 var is_active := true setget set_is_active
+
 # Text string to reference the effect and instantiate it. See `StatusEffectBuilder`.
 var id := "base_effect"
 
@@ -99,12 +101,14 @@ func set_is_active(value) -> void:
 
 
 # Initializes the status effect on the battler.
+# @tags: virtual
 func _start() -> void:
 	pass
 
 
 # Applies the status effect to the battler. Used with ticking effects,
 # for example, a poison status dealing damage every two seconds.
+# @tags: virtual
 func _apply() -> void:
 	pass
 

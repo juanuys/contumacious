@@ -4,7 +4,6 @@ extends Resource
 # We will define this enum several times in our codebase.
 # Having it in the file allows us to use it as an export hint and to have a
 # drop-down menu in the inspector. See `element` below.
-# TODO Rock, Paper, Sciccors?
 enum Elements { NONE, ROCK, PAPER, SCISSORS, BUG }
 
 # The following two properties are for the user interface.

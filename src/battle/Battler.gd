@@ -58,7 +58,6 @@ func _ready() -> void:
 	# the same value that goes down.
 	assert(stats is BattlerStats)
 	stats = stats.duplicate()
-	stats.reinitialize()
 
 	# We connect to the stats' `health_depleted` signal to react to the health reaching `0`.
 	stats.connect("health_depleted", self, "_on_BattlerStats_health_depleted")
@@ -69,7 +68,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	# Increments the `_readiness`. Note stats.speed isn't defined yet.
+	# Increments the `_readiness`.
 	_set_readiness(_readiness + stats.speed * delta * time_scale)
 
 
@@ -134,9 +133,9 @@ func set_is_selected(value) -> void:
 		assert(is_selectable)
 
 	is_selected = value
-	emit_signal("selection_toggled", is_selected)
 	if is_selected:
 		battler_anim.move_forward()
+	emit_signal("selection_toggled", is_selected)
 
 
 func set_is_selectable(value) -> void:
@@ -162,17 +161,17 @@ func take_hit(hit: Hit) -> void:
 	# We encapsulated the hit chance in the hit. The hit object tells us if we should take damage.
 	if hit.does_hit():
 		_take_damage(hit.damage)
+		emit_signal("damage_taken", hit.damage)
 		# If the hit comes with an effect, we apply it to the battler.
 		if hit.effect:
 			print("<< taking damage from effect")
 			_apply_status_effect(hit.effect)
-		emit_signal("damage_taken", hit.damage)
 	else:
 		emit_signal("hit_missed")
 
 
 # Applies damage to the battler's stats.
-# Later, it should also trigger a damage animation.
+# also trigger a damage animation.
 func _take_damage(amount: int) -> void:
 	stats.health -= amount
 	print("%s took %s damage. Health is now %s." % [name, amount, stats.health])
@@ -189,15 +188,15 @@ func act(action) -> void:
 	# We wait for the action to apply. It's a coroutine, that is to say, an asynchronous function,
 	# so we need to use yield.
 	yield(action.apply_async(), "completed")
+	battler_anim.move_back()
 	# We reset the `_readiness`. The value can be greater than zero,
 	# depending on the action.
 	_set_readiness(action.get_readiness_saved())
-	# We shouldn't set process back to `true` if the ...
 	if is_active:
 		set_process(true)
 	# We emit our new signal, indicating the end of a turn for a player-controlled character.
 	emit_signal("action_finished")
-	battler_anim.move_back()
+	
 
 
 func _on_BattlerAnim_animation_finished(anim_name):
