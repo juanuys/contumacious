@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource( 1 )
 label = "Basic attack"
-energy_cost = 0
+energy_cost = 1
 element = 0
 is_targeting_self = false
 is_targeting_all = false
