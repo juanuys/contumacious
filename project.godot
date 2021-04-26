@@ -244,6 +244,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/battle/command/Hit.gd"
 }, {
+"base": "ScriptProperties",
+"class": "IGNORED_SP",
+"language": "GDScript",
+"path": "res://src/custom/SP.gd"
+}, {
 "base": "LineEdit",
 "class": "IntegerLineEdit",
 "language": "GDScript",
@@ -289,10 +294,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/DeckBuilder/QuantityNumberButton.gd"
 }, {
-"base": "ScriptProperties",
+"base": "Reference",
 "class": "SP",
 "language": "GDScript",
-"path": "res://src/custom/SP.gd"
+"path": "res://src/cc/SP.gd"
 }, {
 "base": "ScriptObject",
 "class": "ScriptAlter",
@@ -399,6 +404,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/battle/ui/turn_bar/UIBattlerIcon.gd"
 }, {
+"base": "Panel",
+"class": "UICombatResultPanel",
+"language": "GDScript",
+"path": "res://src/battle/ui/UICombatResultPanel.gd"
+}, {
 "base": "Node2D",
 "class": "UIDamageLabel",
 "language": "GDScript",
@@ -467,6 +477,7 @@ _global_script_class_icons={
 "Hand": "",
 "Highlight": "",
 "Hit": "",
+"IGNORED_SP": "",
 "IntegerLineEdit": "",
 "ManipulationButtons": "",
 "MousePointer": "",
@@ -498,6 +509,7 @@ _global_script_class_icons={
 "UIActionMenu": "",
 "UIBattlerHUD": "",
 "UIBattlerIcon": "",
+"UICombatResultPanel": "",
 "UIDamageLabel": "",
 "UIDamageLabelBuilder": "",
 "ViewportCardFocus": "",
@@ -514,6 +526,7 @@ config/icon="res://icon.png"
 
 cfc="*res://src/core/CFControl.gd"
 Events="*res://src/Events.gd"
+Game="*res://src/Game.gd"
 
 [display]
 

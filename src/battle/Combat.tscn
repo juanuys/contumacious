@@ -41,3 +41,4 @@ script = ExtResource( 11 )
 [node name="UIDamageLabelBuilder" parent="UI" instance=ExtResource( 10 )]
 
 [connection signal="combat_ended" from="." to="UI" method="_on_Combat_combat_ended"]
+[connection signal="player_turn_started" from="ActiveTurnQueue" to="UI" method="_on_ActiveTurnQueue_player_turn_started"]

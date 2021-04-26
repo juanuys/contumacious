@@ -1,5 +1,6 @@
 # The tool mode allows us to update the label's text without directly accessing the node.
 tool
+class_name UICombatResultPanel
 extends Panel
 
 # We expose a text property to encapsulate the label in the scene.
@@ -19,8 +20,10 @@ func set_text(value: String) -> void:
 
 # And here are our fade animations.
 func fade_in() -> void:
+	print(">> alert panel fade in")
 	_anim_player.play("fade_in")
 
 
 func fade_out() -> void:
+	print(">> alert panel fade out")
 	_anim_player.play("fade_out")

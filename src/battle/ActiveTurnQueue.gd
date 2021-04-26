@@ -21,14 +21,19 @@ var time_scale := 1.0 setget set_time_scale
 # We're going to use it to play the next battler's turn.
 signal player_turn_finished
 
+# Emitted when it's the player's turn
+signal player_turn_started(message)
+
 # If `true`, the player is currently playing a turn
 var _is_player_playing := false
 # Stack of player-controlled battlers that have to take turns.
 var _queue_player := []
 
-# Stores a reference to the UIActionMenu scene. You have to assign it in the Inspector.
-export var UIActionMenuScene: PackedScene
+# Assign both the below it in the Inspector.
+# Only one is used at a time, either during "select action" or "play card" mode.
 
+# an action menu which pops up when it's the player's turn
+export var UIActionMenuScene: PackedScene
 
 func _ready() -> void:
 	# to start the next turn.
@@ -113,7 +118,9 @@ func _play_turn(battler: Battler) -> void:
 			# The player has to first select an action, then a target.
 			# We store the selected action in the `action_data` variable defined
 			# at the start of the function.
-			# TODO cc: get action_data from played card.
+			
+			# Depending on play mode, either get the action data from 
+			# menu selection, or get action_data from played card.
 			action_data = yield(_player_select_action_async(battler), "completed")
 			# If an action applies an effect to the battler only, we
 			# automatically set it as the target.
@@ -159,12 +166,19 @@ func _play_turn(battler: Battler) -> void:
 		emit_signal("player_turn_finished")
 
 func _player_select_action_async(battler: Battler) -> ActionData:
-	
-	# yield(get_tree(), "idle_frame")
-	# return battler.actions[0]
+
+	match Game.game_mode:
+		"card":
+			return _player_play_card_async(battler)
+		"action":
+			return _player_play_action_async(battler)
+		_:
+			return _player_play_card_async(battler)
+
+
+func _player_play_action_async(battler: Battler) -> ActionData:
 	
 	# Every time the player has to select an action in the turn loop, we instantiate the menu.
-	# TODO cc: disable the menu, and let the player just play a card.
 	var action_menu: UIActionMenu = UIActionMenuScene.instance()
 	add_child(action_menu)
 	# Calling its `open` method makes it appear and populates it with action buttons.
@@ -172,6 +186,19 @@ func _player_select_action_async(battler: Battler) -> ActionData:
 	# We then wait for the player to select an action in the menu and to return it.
 	var data: ActionData = yield(action_menu, "action_selected")
 	return data
+
+func _player_play_card_async(battler: Battler) -> ActionData:
+	"""
+	Called when it's the player's turn in: "play card" mode
+	"""
+	
+	emit_signal("player_turn_started", "It's your turn!")
+		
+	# Calling its `open` method makes it appear and populates it with action buttons.
+	# action_menu.open(battler)
+	# We then wait for the player to select an action in the menu and to return it.
+	# var data: ActionData = yield(action_menu, "action_selected")
+	return yield(get_tree().create_timer(999.0), "timeout")
 
 
 func _player_select_targets_async(_action: ActionData, opponents: Array) -> Array:

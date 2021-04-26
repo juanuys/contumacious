@@ -4,7 +4,7 @@
 # the core [ScriptProperties] class provided by CGF, with their own requirements.
 # 
 # This is particularly useful when needing to adjust filters for the game's needs.
-class_name SP
+class_name IGNORED_SP
 extends ScriptProperties
 
 # A demonstration filter setup. If you specify this value in your
