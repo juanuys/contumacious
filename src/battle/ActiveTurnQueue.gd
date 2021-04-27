@@ -124,7 +124,10 @@ func _play_turn(battler: Battler) -> void:
 			action_data = yield(_player_select_action_async(battler), "completed")
 			# If an action applies an effect to the battler only, we
 			# automatically set it as the target.
-			if action_data.is_targeting_self:
+			if action_data.maybe_target:
+				targets = [action_data.maybe_target]
+				Events.emit_signal("player_target_selection_done")
+			elif action_data.is_targeting_self:
 				targets = [battler]
 			else:
 				targets = yield(
@@ -185,7 +188,9 @@ func _player_play_action_async(battler: Battler) -> ActionData:
 	action_menu.open(battler)
 	# We then wait for the player to select an action in the menu and to return it.
 	var data: ActionData = yield(action_menu, "action_selected")
+	
 	return data
+
 
 func _player_play_card_async(battler: Battler) -> ActionData:
 	"""
@@ -193,12 +198,11 @@ func _player_play_card_async(battler: Battler) -> ActionData:
 	"""
 	
 	emit_signal("player_turn_started", "It's your turn!")
-		
-	# Calling its `open` method makes it appear and populates it with action buttons.
-	# action_menu.open(battler)
-	# We then wait for the player to select an action in the menu and to return it.
-	# var data: ActionData = yield(action_menu, "action_selected")
-	return yield(get_tree().create_timer(999.0), "timeout")
+	
+	# var data: ActionData = yield(Events, "action_and_target_selected")
+	var action_data = yield(Events, "action_selected")
+
+	return action_data
 
 
 func _player_select_targets_async(_action: ActionData, opponents: Array) -> Array:

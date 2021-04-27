@@ -49,3 +49,16 @@ board, hand, pile, or NONE
 
 # Targeting signals
 
+In `MyTargetingArrow`:
+
+```
+
+			tc.emit_signal("card_targeted", tc, "card_targeted",
+					{"targeting_source": owner_object})
+		target_object = tc
+	emit_signal("target_selected",target_object)
+
+```
+
+
+Is it possible to use either of `card_targeted` or `target_selected` in my battler `scriptables` implementation?

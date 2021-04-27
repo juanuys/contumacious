@@ -8,6 +8,8 @@
 class_name MyCard
 extends Card
 
+enum Elements { NONE, ROCK, PAPER, SCISSORS, BUG }
+
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup() -> void:
@@ -23,6 +25,55 @@ func setup() -> void:
 			new_texture.create_from_image(image)
 			card_front.art.texture = new_texture
 			card_front.art.visible = true
+
+func get_action_data() -> ActionData:
+	"""
+	Initialises ActionData from card properties.
+	The only ActionData impl we have right now is
+	AttackActionData.
+	
+	
+	"""
+	
+	var damage_multiplier = 1.0
+	var hit_chance = 100.0
+	var status_effect = null
+	var energy_cost = int(properties["Cost"])
+	var damage = int(properties["Power"])
+	var element = Elements.NONE
+	var is_targeting_self = false
+	var is_targeting_all = false
+	var readiness_saved = 0.0
+	var label = properties["Name"]
+	
+	
+	var action_data: ActionData = AttackActionData.new(
+		damage_multiplier,
+		hit_chance,
+		status_effect,
+		energy_cost,
+		damage,
+		element,
+		is_targeting_self,
+		is_targeting_all,
+		readiness_saved,
+		label
+		)
+	"""
+	var action_data: ActionData = AttackActionData.new()
+	action_data.damage_multiplier = damage_multiplier
+	action_data.hit_chance = hit_chance
+	action_data.status_effect = status_effect
+	action_data.energy_cost = energy_cost
+	action_data.damage = damage
+	action_data.element = element
+	action_data.is_targeting_self = is_targeting_self
+	action_data.is_targeting_all = is_targeting_all
+	action_data.readiness_saved = readiness_saved
+	action_data.label = label
+	"""
+	
+	return action_data
 
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:

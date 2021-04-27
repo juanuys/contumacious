@@ -8,3 +8,6 @@ extends Node
 signal combat_action_hovered(display_name, energy_cost)
 # Emitted during a player's turn, when they chose an action and validated their target.
 signal player_target_selection_done
+
+# Emitted from CustomScripts and yielded on in ActiveTurnQueue
+signal action_selected(action_data)

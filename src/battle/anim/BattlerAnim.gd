@@ -92,7 +92,7 @@ func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 func set_direction(value: int):
 	direction = value
 	scale.x = -1.0 if direction == Direction.RIGHT else 1.0
-	
+		
 func get_top_anchor_global_position() -> Vector2:
 	return _anchor_top.global_position
 

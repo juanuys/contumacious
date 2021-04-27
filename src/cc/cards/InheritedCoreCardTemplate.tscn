@@ -5,7 +5,7 @@
 [ext_resource path="res://src/cc/MyCardTemplate.gd" type="Script" id=3]
 [ext_resource path="res://src/cc/cards/DuplicateCoreTargetingArrow.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/cc/DuplicateCustomCGFCardFront.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/cc/DuplicateCustomCGFCardBack.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/cc/cards/DuplicateCustomCGFCardBack.tscn" type="PackedScene" id=6]
 
 [node name="Card" instance=ExtResource( 1 )]
 script = ExtResource( 3 )

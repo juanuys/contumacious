@@ -51,25 +51,26 @@ func _get_battler(subject):
 # You can pass a predefined subject, but it's optional.
 func custom_script(script: ScriptObject) -> void:
 	Events.emit_signal("player_target_selection_done")
-	var card: Card = script.owner
-	var subjects: Array = script.subjects
 	match script.owner.canonical_name:
 		"Elbow Bump":
-			if not costs_dry_run:
-				print("CARD SCRIPT elbow bump")
-				for subject in subjects:
-					var battler = _get_battler(subject)
-					print("subject: %s" % battler)
-					var hit = Hit.new(50)
-					battler.take_hit(hit)
+			_play_card(script)
 		"Knee Bump":
-			if not costs_dry_run:
-				print("CARD SCRIPT knee bump")
-				for subject in subjects:
-					var battler = _get_battler(subject)
-					print("subject: %s" % battler)
-					var hit = Hit.new(20)
-					battler.take_hit(hit)
+			_play_card(script)
+
+
+func _play_card(script: ScriptObject):
+	if not costs_dry_run:
+		var card: Card = script.owner
+		print("Playing card: %s" % card.canonical_name)
+		var subjects: Array = script.subjects
+		var action_data = card.get_action_data()
+		
+		
+		# TODO enforce one subject for now?
+		for subject in subjects:
+			action_data.maybe_target = _get_battler(subject)
+		
+		Events.emit_signal("action_selected", action_data)
 
 # warning-ignore:unused_argument
 func custom_alterants(script: ScriptObject) -> int:
