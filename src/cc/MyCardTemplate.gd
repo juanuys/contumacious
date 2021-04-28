@@ -10,6 +10,8 @@ extends Card
 
 enum Elements { NONE, ROCK, PAPER, SCISSORS, BUG }
 
+var disabled_card = false
+
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup() -> void:
@@ -62,6 +64,9 @@ func get_action_data() -> ActionData:
 
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
+	if disabled_card:
+		return
+
 	# this is commented as we want to disable drag for now
 	# ._on_Card_gui_input(event)
 	

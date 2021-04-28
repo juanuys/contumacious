@@ -54,7 +54,13 @@ func _ready() -> void:
 			_opponents.append(battler)
 	
 	for i in N:
+		yield(get_tree().create_timer(0.1), "timeout")
 		cfc.NMAP.hand.draw_card()
+	
+	# not our turn yet
+	for card in cfc.NMAP.hand.get_all_cards():
+		card.disabled_card = true
+		
 	# disable the deck, as cards will be dealt automatically
 	cfc.NMAP.deck.disabled_deck = true
 
@@ -95,6 +101,10 @@ func _play_turn(battler: Battler) -> void:
 			potential_targets.append(opponent)
 
 	if battler.is_player_controlled():
+		# re-enable the cards
+		for card in cfc.NMAP.hand.get_all_cards():
+			card.disabled_card = false
+		
 		# We'll use the selection to move playable battlers
 		# forward. This value will also make the Heads-Up Display (HUD) for this
 		# battler move forward.
@@ -236,3 +246,7 @@ func _on_player_turn_finished() -> void:
 		for n in missing_cards:
 			yield(get_tree().create_timer(0.1), "timeout")
 			cfc.NMAP.hand.draw_card()
+	
+	# disable all cards in hand so we can't play out of turn
+	for card in cfc.NMAP.hand.get_all_cards():
+		card.disabled_card = true
