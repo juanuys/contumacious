@@ -7,6 +7,11 @@
 script = ExtResource( 1 )
 label = "Basic attack"
 energy_cost = 1
+damage = 1.0
+element = 0
+is_targeting_self = false
+is_targeting_all = false
 readiness_saved = 20.0
 damage_multiplier = 0.8
+hit_chance = 100.0
 status_effect = ExtResource( 2 )

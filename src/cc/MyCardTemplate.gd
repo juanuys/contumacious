@@ -31,8 +31,6 @@ func get_action_data() -> ActionData:
 	Initialises ActionData from card properties.
 	The only ActionData impl we have right now is
 	AttackActionData.
-	
-	
 	"""
 	
 	var damage_multiplier = 1.0
@@ -59,19 +57,6 @@ func get_action_data() -> ActionData:
 		readiness_saved,
 		label
 		)
-	"""
-	var action_data: ActionData = AttackActionData.new()
-	action_data.damage_multiplier = damage_multiplier
-	action_data.hit_chance = hit_chance
-	action_data.status_effect = status_effect
-	action_data.energy_cost = energy_cost
-	action_data.damage = damage
-	action_data.element = element
-	action_data.is_targeting_self = is_targeting_self
-	action_data.is_targeting_all = is_targeting_all
-	action_data.readiness_saved = readiness_saved
-	action_data.label = label
-	"""
 	
 	return action_data
 

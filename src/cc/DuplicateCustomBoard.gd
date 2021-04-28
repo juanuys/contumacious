@@ -20,7 +20,7 @@ func _ready() -> void:
 		cfc.game_rng_seed = CFUtils.generate_random_seed()
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	if not get_tree().get_root().has_node('Gut'):
-		load_test_cards()
+		load_deck()
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
 
@@ -105,3 +105,19 @@ func _on_DeckBuilder_pressed() -> void:
 
 func _on_DeckBuilder_hide() -> void:
 	cfc.game_paused = false
+
+func load_deck() -> void:
+	var deck: Dictionary
+	var sample_decks = load(CFConst.PATH_CUSTOM + "decks/SampleDeck.gd")
+	deck = sample_decks.decks[0].cards
+
+	var cards_array := []
+	for card_name in deck:
+		for _iter in range(deck[card_name]):
+			cards_array.append(cfc.instance_card(card_name))
+	for card in cards_array:
+		cfc.NMAP.deck.add_child(card)
+		# warning-ignore:return_value_discarded
+		#card.set_is_faceup(false,true)
+		card._determine_idle_state()
+	cfc.NMAP.deck.shuffle_cards()

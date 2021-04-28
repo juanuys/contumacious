@@ -20,10 +20,8 @@ func set_text(value: String) -> void:
 
 # And here are our fade animations.
 func fade_in() -> void:
-	print(">> alert panel fade in")
 	_anim_player.play("fade_in")
 
 
 func fade_out() -> void:
-	print(">> alert panel fade out")
 	_anim_player.play("fade_out")
