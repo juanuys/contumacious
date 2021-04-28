@@ -75,8 +75,6 @@ func _on_Battler_ready_to_act(battler: Battler) -> void:
 	else:
 		_play_turn(battler)
 
-# TODO cc: turnqueue to deal more cards after every turn so player
-# always has N cards in hand.
 func _play_turn(battler: Battler) -> void:
 	battler.stats.energy += 1
 	
@@ -223,4 +221,17 @@ func _on_player_turn_finished() -> void:
 	# corresponding battler play their turn.
 	else:
 		_play_turn(_queue_player.pop_front())
+	
+	# ensure that there are N cards in the hand
+	# N might be a counter, which can be bumped with another card.
+	var N := 3
+	var card_count: int = cfc.NMAP.hand.get_card_count()
+	var missing_cards: int = N - card_count
+	if missing_cards > 0:
+		for n in missing_cards:
+			cfc.NMAP.hand.draw_card()
+	
+	# now, disable the hand, so the player can't play if
+	# it isn't their turn
+	# TODO
 
