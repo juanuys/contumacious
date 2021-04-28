@@ -2,6 +2,7 @@
 class_name ActiveTurnQueue
 extends Node
 
+const N: int = 3
 var _party_members := []
 var _opponents := []
 
@@ -51,6 +52,11 @@ func _ready() -> void:
 			_party_members.append(battler)
 		else:
 			_opponents.append(battler)
+	
+	for i in N:
+		cfc.NMAP.hand.draw_card()
+	# disable the deck, as cards will be dealt automatically
+	cfc.NMAP.deck.disabled_deck = true
 
 func set_is_active(value: bool) -> void:
 	is_active = value
@@ -122,7 +128,7 @@ func _play_turn(battler: Battler) -> void:
 			action_data = yield(_player_select_action_async(battler), "completed")
 			# If an action applies an effect to the battler only, we
 			# automatically set it as the target.
-			if action_data.maybe_target:
+			if action_data.maybe_target:  # target is piggy-backing on action for card game
 				targets = [action_data.maybe_target]
 				Events.emit_signal("player_target_selection_done")
 			elif action_data.is_targeting_self:
@@ -224,14 +230,9 @@ func _on_player_turn_finished() -> void:
 	
 	# ensure that there are N cards in the hand
 	# N might be a counter, which can be bumped with another card.
-	var N := 3
 	var card_count: int = cfc.NMAP.hand.get_card_count()
 	var missing_cards: int = N - card_count
 	if missing_cards > 0:
 		for n in missing_cards:
+			yield(get_tree().create_timer(0.1), "timeout")
 			cfc.NMAP.hand.draw_card()
-	
-	# now, disable the hand, so the player can't play if
-	# it isn't their turn
-	# TODO
-

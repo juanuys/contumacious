@@ -2,6 +2,9 @@
 extends Pile
 
 signal draw_card(deck)
+
+var disabled_deck = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if not cfc.are_all_nodes_mapped:
@@ -13,6 +16,8 @@ func _ready() -> void:
 	#print(get_signal_connection_list("input_event")[0]['target'].name)
 
 func _on_Deck_input_event(event) -> void:
+	if disabled_deck:
+		return
 	if event.is_pressed()\
 		and not cfc.game_paused\
 		and event.get_button_index() == 1:
