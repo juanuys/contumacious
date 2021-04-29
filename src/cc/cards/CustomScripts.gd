@@ -59,16 +59,25 @@ func custom_script(script: ScriptObject) -> void:
 
 
 func _play_card(script: ScriptObject):
+	var subjects: Array = script.subjects
+	if len(subjects) == 0:
+		script.is_cancelled = true
+		return
+	
 	if not costs_dry_run:
 		var card: Card = script.owner
 		print("Playing card: %s" % card.canonical_name)
-		var subjects: Array = script.subjects
-		var action_data = card.get_action_data()
 		
+		var action_data = card.get_action_data()
 		
 		# TODO enforce one subject for now?
 		for subject in subjects:
-			action_data.maybe_target = _get_battler(subject)
+			var battler = _get_battler(subject)
+			if battler.name == "BattlerProtagonist":
+				script.is_cancelled = true
+				return
+			
+			action_data.maybe_target = battler
 		
 		Events.emit_signal("action_selected", action_data)
 

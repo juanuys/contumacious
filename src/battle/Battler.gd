@@ -105,7 +105,6 @@ func is_player_controlled() -> bool:
 # This function applies the status effect to the battler.
 # Effect is of type `StatusEffect`.
 func _apply_status_effect(effect) -> void:
-	print(">> applying status effect ", effect)
 	_status_effect_container.add(effect)
 
 # ------------------------------------------

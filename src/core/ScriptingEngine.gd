@@ -135,6 +135,11 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 							yield(confirm_return, "completed")
 						if not script.is_accepted:
 							can_all_costs_be_paid = false
+
+			# if a card has been cancelled (e.g. from within custom script), then break out
+			if script.is_cancelled:
+				break
+
 			# If a cost script is not valid
 			# (such as because the subjects cannot be matched)
 			# Then we consider the costs cannot be paid.

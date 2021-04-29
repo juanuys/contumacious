@@ -15,6 +15,9 @@ var is_skipped := false
 var is_cost := false
 var is_else := false
 
+# a card can be cancelled (e.g. from within a custom script)
+var is_cancelled := false
+
 
 # prepares the script_definition needed by the task to function.
 func _init(owner,
