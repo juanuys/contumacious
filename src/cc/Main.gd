@@ -18,6 +18,8 @@ func _ready():
 	$ViewportContainer/Viewport/Board/SeedLabel.hide()
 	$ViewportContainer/Viewport/Board/EnableAttach.hide()
 	$ViewportContainer/Viewport/Board/Debug.hide()
+	$ViewportContainer/Viewport/Board/ReshuffleAllDeck.hide()
+	$ViewportContainer/Viewport/Board/ReshuffleAllDiscard.hide()
 	
 	# add the arena scene on top of the board scene
 	var Arena = arena_scene.instance()
