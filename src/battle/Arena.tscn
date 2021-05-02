@@ -1,13 +1,71 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/battle/Combat.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/backgrounds/train-interior.png" type="Texture" id=2]
 [ext_resource path="res://src/battle/Arena.gd" type="Script" id=3]
+[ext_resource path="res://assets/backgrounds/hills.png" type="Texture" id=4]
+[ext_resource path="res://assets/backgrounds/trees.png" type="Texture" id=5]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+uniform float scroll_speed;
+void fragment() {
+	vec2 shifted_uv = UV;
+	shifted_uv.x += TIME * scroll_speed;
+	vec4 colour = texture(TEXTURE, shifted_uv);
+	COLOR = colour;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/scroll_speed = null
+
+[sub_resource type="Shader" id=3]
+code = "shader_type canvas_item;
+uniform float scroll_speed;
+void fragment() {
+	vec2 shifted_uv = UV;
+	shifted_uv.x += TIME * scroll_speed;
+	vec4 colour = texture(TEXTURE, shifted_uv);
+	COLOR = colour;
+}"
+
+[sub_resource type="ShaderMaterial" id=4]
+shader = SubResource( 3 )
+shader_param/scroll_speed = null
 
 [node name="Arena" type="Node2D"]
 script = ExtResource( 3 )
 
-[node name="Backdrop" type="Sprite" parent="."]
+[node name="Train" type="Node2D" parent="."]
+
+[node name="Hills" type="TextureRect" parent="Train"]
+material = SubResource( 2 )
+margin_left = 277.725
+margin_top = 260.728
+margin_right = 3415.72
+margin_bottom = 498.728
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Trees" type="TextureRect" parent="Train"]
+material = SubResource( 4 )
+margin_left = 272.498
+margin_top = 244.03
+margin_right = 2710.5
+margin_bottom = 611.03
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TrainInterior" type="Sprite" parent="Train"]
 texture = ExtResource( 2 )
 centered = false
 
