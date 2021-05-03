@@ -24,11 +24,4 @@ func _ready():
 	# add the arena scene on top of the board scene
 	var Arena = arena_scene.instance()
 	$ViewportContainer/Viewport.add_child(Arena)
-
-	# initialise combatSystem (it starts/ends combat)
-	# which in turn initialises:
-	# - ActiveTurnQueue (contains list of battlers)
-	# - UI (gets passed a list of battlers)
-	
-	print(Arena.get_children())
-	
+	$ViewportContainer/Viewport.move_child(Arena, 0)
