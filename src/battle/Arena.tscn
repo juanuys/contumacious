@@ -43,9 +43,9 @@ script = ExtResource( 3 )
 [node name="Hills" type="TextureRect" parent="Train"]
 material = SubResource( 2 )
 margin_left = 277.725
-margin_top = 260.728
+margin_top = 228.518
 margin_right = 3415.72
-margin_bottom = 498.728
+margin_bottom = 466.518
 texture = ExtResource( 4 )
 expand = true
 stretch_mode = 2
@@ -56,9 +56,9 @@ __meta__ = {
 [node name="Trees" type="TextureRect" parent="Train"]
 material = SubResource( 4 )
 margin_left = 272.498
-margin_top = 244.03
+margin_top = 169.419
 margin_right = 2710.5
-margin_bottom = 611.03
+margin_bottom = 536.419
 texture = ExtResource( 5 )
 expand = true
 stretch_mode = 2
