@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/battle/anim/BattlerAnim.gd" type="Script" id=1]
-[ext_resource path="res://assets/characters/proto-character.png" type="Texture" id=2]
+[ext_resource path="res://assets/characters/fenyx.png" type="Texture" id=2]
 
 [sub_resource type="Animation" id=1]
 resource_name = "_setup"
@@ -168,7 +168,7 @@ tracks/0/keys = {
 }
 
 [sub_resource type="RectangleShape2D" id=6]
-extents = Vector2( 490.308, 919.558 )
+extents = Vector2( 124.867, 255.909 )
 
 [node name="BattlerAnim" type="Position2D"]
 scale = Vector2( -1, 1 )
@@ -199,13 +199,13 @@ shape = SubResource( 6 )
 [node name="Tween" type="Tween" parent="."]
 
 [node name="TopAnchor" type="Position2D" parent="."]
-position = Vector2( 0, -966 )
+position = Vector2( 0, -267.378 )
 __meta__ = {
 "_gizmo_extents_": 40.0
 }
 
 [node name="BottomAnchor" type="Position2D" parent="."]
-position = Vector2( 0, 966 )
+position = Vector2( 0, 275.563 )
 __meta__ = {
 "_gizmo_extents_": 40.0
 }
