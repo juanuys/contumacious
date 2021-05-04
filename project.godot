@@ -519,7 +519,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Contumacious Commuter"
-run/main_scene="res://src/cc/InheritedCoreMain.tscn"
+run/main_scene="res://src/game/Splash.tscn"
 config/icon="res://icon.png"
 
 [autoload]

@@ -32,12 +32,12 @@ anchor_right = 0.5
 margin_left = -178.0
 margin_right = 178.0
 margin_bottom = 450.0
+custom_constants/separation = 51
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="VBoxContainer"]
-margin_top = 30.0
 margin_right = 356.0
 margin_bottom = 117.0
 theme = ExtResource( 4 )
@@ -46,22 +46,10 @@ text = "Menu"
 align = 1
 valign = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
-margin_top = 121.0
-margin_right = 356.0
-margin_bottom = 151.0
-rect_min_size = Vector2( 0, 30 )
-
-[node name="MarginContainer4" type="MarginContainer" parent="VBoxContainer"]
-margin_top = 155.0
-margin_right = 356.0
-margin_bottom = 185.0
-rect_min_size = Vector2( 0, 30 )
-
 [node name="New Game" type="TextureButton" parent="VBoxContainer"]
-margin_top = 189.0
+margin_top = 168.0
 margin_right = 356.0
-margin_bottom = 262.0
+margin_bottom = 241.0
 texture_normal = ExtResource( 6 )
 texture_pressed = ExtResource( 2 )
 texture_hover = ExtResource( 3 )
@@ -78,19 +66,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer"]
-margin_top = 266.0
-margin_right = 356.0
-margin_bottom = 296.0
-rect_min_size = Vector2( 0, 30 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="LeaveFeedback" type="TextureButton" parent="VBoxContainer"]
-margin_top = 300.0
+margin_top = 292.0
 margin_right = 356.0
-margin_bottom = 373.0
+margin_bottom = 365.0
 texture_normal = ExtResource( 6 )
 texture_pressed = ExtResource( 2 )
 texture_hover = ExtResource( 3 )
@@ -107,19 +86,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MarginContainer3" type="MarginContainer" parent="VBoxContainer"]
-margin_top = 377.0
-margin_right = 356.0
-margin_bottom = 407.0
-rect_min_size = Vector2( 0, 30 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Exit" type="TextureButton" parent="VBoxContainer"]
-margin_top = 411.0
+margin_top = 416.0
 margin_right = 356.0
-margin_bottom = 484.0
+margin_bottom = 489.0
 texture_normal = ExtResource( 6 )
 texture_pressed = ExtResource( 2 )
 texture_hover = ExtResource( 3 )
