@@ -1,9 +1,22 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/cc/DuplicateCustomCGFBoard.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/cc/Main.gd" type="Script" id=2]
 [ext_resource path="res://src/cc/DuplicateCustomCGFInfoPanel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/core/Main.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/art/fx/vignette.png" type="Texture" id=5]
+[ext_resource path="res://assets/art/fx/filmgrain-1080.png" type="Texture" id=6]
+[ext_resource path="res://src/shaders/film_grain.shader" type="Shader" id=7]
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = ExtResource( 7 )
+shader_param/base = Color( 1, 1, 1, 0 )
+shader_param/grain_strength = 0.3
+shader_param/fps = 12.0
+shader_param/stretch = 0.5
+shader_param/flashing = 0.01
+shader_param/grain = ExtResource( 6 )
+shader_param/vignette = ExtResource( 5 )
 
 [node name="Main" instance=ExtResource( 4 )]
 script = ExtResource( 2 )
@@ -15,3 +28,20 @@ margin_left = 9.5874
 margin_top = 5.76221
 margin_right = 1289.59
 margin_bottom = 725.762
+
+[node name="Viewport" parent="ViewportContainer" index="0"]
+size = Vector2( 1920, 1080 )
+
+[node name="Camera2D" type="Camera2D" parent="." index="3"]
+anchor_mode = 0
+current = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera2D" index="0"]
+
+[node name="ColorRect" type="ColorRect" parent="Camera2D/CanvasLayer" index="0"]
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

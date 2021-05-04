@@ -1,7 +1,9 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/battle/anim/BattlerAnim.gd" type="Script" id=1]
 [ext_resource path="res://assets/characters/fenyx.png" type="Texture" id=2]
+[ext_resource path="res://src/shaders/squiggle_vision.shader" type="Shader" id=3]
+[ext_resource path="res://assets/art/normal_maps/45e1265ab27393903ca3faea493f5a54.jpg" type="Texture" id=4]
 
 [sub_resource type="Animation" id=1]
 resource_name = "_setup"
@@ -167,7 +169,14 @@ tracks/0/keys = {
 "values": [ Color( 1, 1, 1, 1 ), Color( 0.980392, 0.211765, 0.211765, 1 ), Color( 1, 1, 1, 1 ), Color( 0.980392, 0.211765, 0.211765, 1 ), Color( 1, 1, 1, 1 ), Color( 0.980392, 0.211765, 0.211765, 1 ), Color( 1, 1, 1, 1 ), Color( 0.980392, 0.211765, 0.211765, 1 ), Color( 1, 1, 1, 1 ) ]
 }
 
-[sub_resource type="RectangleShape2D" id=6]
+[sub_resource type="ShaderMaterial" id=6]
+shader = ExtResource( 3 )
+shader_param/strength = 0.01
+shader_param/speed = 5.0
+shader_param/frames = 4
+shader_param/flowMap = ExtResource( 4 )
+
+[sub_resource type="RectangleShape2D" id=7]
 extents = Vector2( 124.867, 255.909 )
 
 [node name="BattlerAnim" type="Position2D"]
@@ -191,10 +200,11 @@ collision_layer = 2
 collision_mask = 2
 
 [node name="Sprite" type="Sprite" parent="Pivot/Area2D"]
+material = SubResource( 6 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/Area2D"]
-shape = SubResource( 6 )
+shape = SubResource( 7 )
 
 [node name="Tween" type="Tween" parent="."]
 
