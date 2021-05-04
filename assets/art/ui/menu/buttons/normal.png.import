@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/circuitry-detail-normal.png-eb8dc7ac1f76131bcee202b3a3e59647.stex"
+path="res://.import/normal.png-562a63ad541824755b3a2bc5767f560e.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/normal_maps/circuitry-detail-normal.png"
-dest_files=[ "res://.import/circuitry-detail-normal.png-eb8dc7ac1f76131bcee202b3a3e59647.stex" ]
+source_file="res://assets/art/ui/menu/buttons/normal.png"
+dest_files=[ "res://.import/normal.png-562a63ad541824755b3a2bc5767f560e.stex" ]
 
 [params]
 

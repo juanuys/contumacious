@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/45e1265ab27393903ca3faea493f5a54.jpg-291ef103a6b19b0bdb5341534beb89b6.stex"
+path="res://.import/squigglevission.jpg-261ec59251ebedbbf7cf4f7b2d88d076.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/normal_maps/45e1265ab27393903ca3faea493f5a54.jpg"
-dest_files=[ "res://.import/45e1265ab27393903ca3faea493f5a54.jpg-291ef103a6b19b0bdb5341534beb89b6.stex" ]
+source_file="res://assets/art/normal_maps/squigglevission.jpg"
+dest_files=[ "res://.import/squigglevission.jpg-261ec59251ebedbbf7cf4f7b2d88d076.stex" ]
 
 [params]
 
