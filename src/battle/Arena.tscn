@@ -8,11 +8,11 @@
 [ext_resource path="res://assets/audio/sfx/train/train_ambience_loop_1.ogg" type="AudioStream" id=6]
 [ext_resource path="res://src/shaders/scroll_bg.shader" type="Shader" id=7]
 
-[sub_resource type="ShaderMaterial" id=2]
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 7 )
 shader_param/scroll_speed = null
 
-[sub_resource type="ShaderMaterial" id=4]
+[sub_resource type="ShaderMaterial" id=2]
 shader = ExtResource( 7 )
 shader_param/scroll_speed = null
 
@@ -22,7 +22,7 @@ script = ExtResource( 3 )
 [node name="Train" type="Node2D" parent="."]
 
 [node name="Hills" type="TextureRect" parent="Train"]
-material = SubResource( 2 )
+material = SubResource( 1 )
 margin_left = 277.725
 margin_top = 228.518
 margin_right = 3415.72
@@ -35,7 +35,7 @@ __meta__ = {
 }
 
 [node name="Trees" type="TextureRect" parent="Train"]
-material = SubResource( 4 )
+material = SubResource( 2 )
 margin_left = 272.498
 margin_top = 169.419
 margin_right = 2710.5
