@@ -5,6 +5,6 @@
 
 [resource]
 script = ExtResource( 1 )
-display_name = "Bruli"
+display_name = "Brüli"
 texture = ExtResource( 2 )
 flip = true

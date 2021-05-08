@@ -15,6 +15,7 @@ ai_scene = ExtResource( 2 )
 ui_data = ExtResource( 3 )
 
 [node name="BattlerAnim" parent="." instance=ExtResource( 4 )]
+scale = Vector2( -1, 1 )
 
 [node name="StatusEffectContainer" type="Node" parent="."]
 script = ExtResource( 5 )

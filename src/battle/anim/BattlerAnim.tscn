@@ -180,8 +180,8 @@ shader_param/flowMap = ExtResource( 4 )
 extents = Vector2( 124.867, 255.909 )
 
 [node name="BattlerAnim" type="Position2D"]
-scale = Vector2( -1, 1 )
 script = ExtResource( 1 )
+direction = 0
 
 [node name="Pivot" type="Position2D" parent="."]
 
