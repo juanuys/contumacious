@@ -23,8 +23,6 @@ func setup(battler: Battler) -> void:
 	_energy_bar.setup(stats.get_max_energy(), stats.energy)
 
 	stats.connect("stat_changed", self, "_on_BattlerStats_stat_changed")
-	
-	self.scale = Vector2(0.25, 0.25)
 
 
 # We control the health in the life bar from this node. All we have to do is update its value.
