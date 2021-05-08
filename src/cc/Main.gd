@@ -20,6 +20,7 @@ func _ready():
 	$ViewportContainer/Viewport/Board/Debug.hide()
 	$ViewportContainer/Viewport/Board/ReshuffleAllDeck.hide()
 	$ViewportContainer/Viewport/Board/ReshuffleAllDiscard.hide()
+	$ViewportContainer/Viewport/Board/Counters.hide()
 	
 	# add the arena scene on top of the board scene
 	var Arena = arena_scene.instance()

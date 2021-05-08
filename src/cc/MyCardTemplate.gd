@@ -131,3 +131,11 @@ func common_pre_execution_scripts(trigger: String) -> void:
 func common_post_execution_scripts(trigger: String) -> void:
 	pass
 
+
+
+func _on_Card_card_moved_to_hand(card, trigger, details):
+	$SFX.play_sound()
+
+
+func _on_Card_card_moved_to_pile(card, trigger, details):
+	$SFX.play_sound()
