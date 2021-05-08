@@ -7,7 +7,7 @@
 [node name="UIBattlerIcon" type="TextureRect"]
 margin_right = 40.0
 margin_bottom = 40.0
-rect_scale = Vector2( 0.15, 0.15 )
+rect_scale = Vector2( 0.1, 0.1 )
 texture = ExtResource( 1 )
 script = ExtResource( 3 )
 __meta__ = {
