@@ -16,6 +16,7 @@ func _ready():
 	dir.list_dir_end()
 
 func play_sound():
-	var asset = assets[randi() % assets.size()]
-	self.stream.audio_stream = asset
-	self.play()
+	if not assets.empty():
+		var asset = assets[randi() % assets.size()]
+		self.stream.audio_stream = asset
+		self.play()
