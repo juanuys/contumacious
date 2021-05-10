@@ -2009,7 +2009,7 @@ func _process_card_state() -> void:
 			# Used when card is focused on by the mouse hovering over it.
 			# We increase the z_index to allow the focused card appear
 			# always over its neighbours
-			z_index = 10
+			z_index = 99
 			set_focus(true,check_play_costs())
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
@@ -2059,6 +2059,7 @@ func _process_card_state() -> void:
 				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
+				_target_position.y = _target_position.y - 100
 				_add_tween_position(expected_position, _target_position, 0.3)
 				_add_tween_scale(scale, Vector2(1.5,1.5))
 

@@ -42,6 +42,7 @@ __meta__ = {
 [node name="Highlight" parent="Control" instance=ExtResource( 3 )]
 
 [node name="ManipulationButtons" type="HBoxContainer" parent="Control"]
+visible = false
 mouse_filter = 0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -50,6 +51,7 @@ __meta__ = {
 [node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=[
 "manipulation_button",
 ]]
+visible = false
 margin_right = 24.0
 margin_bottom = 26.0
 mouse_filter = 1
@@ -87,6 +89,7 @@ margin_right = 39.0
 margin_bottom = 50.0
 
 [node name="Counters" type="PanelContainer" parent="."]
+visible = false
 margin_left = -0.392883
 margin_top = -46.4221
 margin_right = 19.6071

@@ -23,6 +23,17 @@ func _ready() -> void:
 		load_deck()
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
+	
+	# reset the deck, hand, discard pile margins
+	yield(get_tree().create_timer(0.2), "timeout")
+	for member in get_tree().get_nodes_in_group("right"):
+		member.position.x = member.position.x - 40
+	
+	for member in get_tree().get_nodes_in_group("left"):
+		member.position.x = member.position.x + 20
+	
+	for member in get_tree().get_nodes_in_group("bottom"):
+		member.position.y = member.position.y - 50
 
 
 
