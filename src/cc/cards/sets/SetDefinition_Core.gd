@@ -20,4 +20,12 @@ const CARDS := {
 		"Cost": 3,
 		"Power": 8,
 	},
+	"Newspaper": {
+		"Type": CardConfig.CardTypes.card_type_strike,
+		"Tags": ["‎"],
+		"Requirements": "‎",
+		"Abilities": "Open a newspaper in your neighbour's face",
+		"Cost": 4,
+		"Power": 12,
+	},
 }

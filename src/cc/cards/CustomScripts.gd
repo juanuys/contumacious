@@ -56,6 +56,12 @@ func custom_script(script: ScriptObject) -> void:
 			_play_card(script)
 		"Knee Knock":
 			_play_card(script)
+		"Newspaper":
+			_play_card(script)
+		_:
+			print("XXXXXXXXX")
+			print("card not matched: %s" % script.owner.canonical_name)
+			print("XXXXXXXXX")
 
 
 func _play_card(script: ScriptObject):

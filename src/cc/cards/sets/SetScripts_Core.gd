@@ -48,6 +48,27 @@ func get_scripts(card_name: String) -> Dictionary:
 				]
 			},
 		},
+		"Newspaper": {
+			"manual": {
+				"hand": [
+					{
+						"name": "custom_script",
+						"subject": "target",
+					},
+					{
+						"name": "move_card_to_container",
+						"dest_container": cfc.NMAP.discard,
+						"subject": "self",
+					},
+					{
+						"name": "mod_counter",
+						"counter_name": "credits",
+						"is_cost": true,
+						"modification": -1,
+					},
+				]
+			},
+		},
 	}
 	# We return only the scripts that match the card name and trigger
 	print("getting script: ", card_name)

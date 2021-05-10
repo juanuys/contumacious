@@ -6,6 +6,7 @@ const decks = [
 		"cards": {
 			"Knee Knock": 5,
 			"Elbow Bump": 3,
+			"Newspaper": 2,
 		},
 	},
 ]
