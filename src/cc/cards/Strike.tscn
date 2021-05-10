@@ -5,3 +5,23 @@
 
 [node name="Strike" instance=ExtResource( 1 )]
 card_front_design = ExtResource( 2 )
+
+[node name="Control" parent="." index="1"]
+anchor_right = 0.0
+anchor_bottom = 0.0
+rect_min_size = Vector2( 150, 240 )
+
+[node name="Debug" parent="." index="3"]
+visible = false
+
+[node name="state" parent="Debug" index="1"]
+margin_top = 0.0
+margin_bottom = 14.0
+
+[node name="index" parent="Debug" index="2"]
+margin_top = 18.0
+margin_bottom = 32.0
+
+[node name="parent" parent="Debug" index="3"]
+margin_top = 36.0
+margin_bottom = 50.0

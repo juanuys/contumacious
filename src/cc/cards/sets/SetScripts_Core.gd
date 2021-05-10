@@ -27,7 +27,7 @@ func get_scripts(card_name: String) -> Dictionary:
 				]
 			},
 		},
-		"Knee Bump": {
+		"Knee Knock": {
 			"manual": {
 				"hand": [
 					{

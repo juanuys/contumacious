@@ -4,7 +4,7 @@ const decks = [
 	{
 		"name": "Sample Deck",
 		"cards": {
-			"Knee Bump": 5,
+			"Knee Knock": 5,
 			"Elbow Bump": 3,
 		},
 	},

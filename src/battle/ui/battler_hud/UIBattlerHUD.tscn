@@ -9,15 +9,16 @@
 script = ExtResource( 5 )
 
 [node name="Label" type="Label" parent="."]
+visible = false
 self_modulate = Color( 0.780392, 0.780392, 0.780392, 1 )
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -91.5
-margin_top = -36.5
+margin_top = -100.0
 margin_right = 91.5
-margin_bottom = 36.5
+margin_bottom = -27.0
 theme = ExtResource( 3 )
 custom_colors/font_color = Color( 0.00392157, 0.188235, 0.580392, 1 )
 text = "Fenyx"
@@ -33,9 +34,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -142.5
-margin_top = 20.0
+margin_top = -54.0
 margin_right = 142.5
-margin_bottom = 69.0
+margin_bottom = -5.0
 
 [node name="UIEnergyBar" parent="." instance=ExtResource( 2 )]
 visible = false

@@ -54,7 +54,7 @@ func custom_script(script: ScriptObject) -> void:
 	match script.owner.canonical_name:
 		"Elbow Bump":
 			_play_card(script)
-		"Knee Bump":
+		"Knee Knock":
 			_play_card(script)
 
 

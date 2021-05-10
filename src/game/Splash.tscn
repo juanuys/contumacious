@@ -32,7 +32,7 @@ script = ExtResource( 4 )
 [node name="BGColour" type="ColorRect" parent="."]
 rect_min_size = Vector2( 1920, 1080 )
 mouse_filter = 2
-color = Color( 1, 0.984314, 0.745098, 1 )
+color = Color( 1, 0.984314, 0.733333, 1 )
 __meta__ = {
 "_edit_use_anchors_": true
 }

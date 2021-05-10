@@ -27,7 +27,9 @@ position = Vector2( 75, 120 )
 shape = SubResource( 1 )
 
 [node name="Control" type="Control" parent="."]
-rect_min_size = Vector2( 150, 240 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 171, 240 )
 __meta__ = {
 "_edit_group_": true,
 "_edit_use_anchors_": false
@@ -120,13 +122,6 @@ __meta__ = {
 }
 
 [node name="state" type="Label" parent="Debug"]
-margin_right = 40.0
-margin_bottom = 14.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="index" type="Label" parent="Debug"]
 margin_top = 18.0
 margin_right = 40.0
 margin_bottom = 32.0
@@ -134,10 +129,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="parent" type="Label" parent="Debug"]
+[node name="index" type="Label" parent="Debug"]
 margin_top = 36.0
 margin_right = 40.0
 margin_bottom = 50.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="parent" type="Label" parent="Debug"]
+margin_top = 54.0
+margin_right = 40.0
+margin_bottom = 68.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

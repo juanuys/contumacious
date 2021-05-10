@@ -33,6 +33,12 @@ is_party_member = true
 script = ExtResource( 11 )
 
 [node name="UITurnBar" parent="UI" instance=ExtResource( 4 )]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = -960.0
+margin_top = -407.0
+margin_right = 960.0
+margin_bottom = 407.0
 
 [node name="UIBattlerHUDList" parent="UI" instance=ExtResource( 9 )]
 

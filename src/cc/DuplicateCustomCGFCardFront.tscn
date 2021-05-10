@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/cc/DuplicateCustomCGFCardFront.gd" type="Script" id=2]
 [ext_resource path="res://assets/cards/front-placeholder.png" type="Texture" id=3]
+[ext_resource path="res://assets/font/timr45w.ttf" type="DynamicFontData" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 1, 1, 1, 1 )
@@ -12,6 +13,7 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.835294, 0.835294, 0.835294, 1 )
 border_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -45,7 +47,7 @@ font_data = ExtResource( 1 )
 [sub_resource type="DynamicFont" id=7]
 size = 12
 use_filter = true
-font_data = ExtResource( 1 )
+font_data = ExtResource( 4 )
 
 [sub_resource type="DynamicFont" id=8]
 size = 14

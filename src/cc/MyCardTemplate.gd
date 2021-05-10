@@ -71,9 +71,12 @@ func _on_Card_gui_input(event) -> void:
 	# ._on_Card_gui_input(event)
 	
 	if event is InputEventMouseButton:
+		print("click 2")
 		if event.is_pressed() and event.get_button_index() == 1:
+			print("click 3")
 			targeting_arrow.initiate_targeting()
 		elif not event.is_pressed() and event.get_button_index() == 1:
+			print("click 4")
 			targeting_arrow.complete_targeting()
 			
 			if ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE

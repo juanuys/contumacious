@@ -6,17 +6,17 @@ const SET = "Demo Set 1"
 const CARDS := {
 	"Elbow Bump": {
 		"Type": CardConfig.CardTypes.card_type_strike,
-		"Tags": [""],
-		"Requirements": " ",
-		"Abilities": "Take that, funny bone!",
+		"Tags": ["‎"],
+		"Requirements": "‎",
+		"Abilities": "Bump your foe's elbow off the armrest",
 		"Cost": 2,
 		"Power": 5,
 	},
-	"Knee Bump": {
+	"Knee Knock": {
 		"Type": CardConfig.CardTypes.card_type_strike,
-		"Tags": [""],
-		"Requirements": " ",
-		"Abilities": "Right in the knee",
+		"Tags": ["‎"],
+		"Requirements": "‎",
+		"Abilities": "Reclaim your leg room, and then some",
 		"Cost": 3,
 		"Power": 8,
 	},

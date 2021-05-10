@@ -66,13 +66,13 @@ tracks/0/keys = {
 [node name="UIAlertPanel" type="Panel"]
 self_modulate = Color( 1, 1, 1, 0.498039 )
 anchor_left = 0.5
-anchor_top = 1.0
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 1.0
+anchor_bottom = 0.5
 margin_left = -396.5
-margin_top = -417.506
+margin_top = -96.5
 margin_right = 396.5
-margin_bottom = -224.506
+margin_bottom = 96.5
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true,

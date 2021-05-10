@@ -12,7 +12,7 @@ func setup(battlers: Array) -> void:
 		var battler_hud: UIBattlerHUD = UIBattlerHUD.instance()
 		add_child(battler_hud)
 		battler_hud.setup(battler)
-		battler_hud.global_position = battler.battler_anim.get_bottom_anchor_global_position()
+		battler_hud.global_position = battler.battler_anim.get_top_anchor_global_position()
 
 
 # The two functions below respectively play the fade in and fade out animations.

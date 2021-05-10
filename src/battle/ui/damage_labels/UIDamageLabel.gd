@@ -63,21 +63,21 @@ func _animate() -> void:
 	# And we calculate an offset vector from that.
 	var offset := Vector2.UP.rotated(angle) * 60.0
 
-	# The Tween node takes care of animating the Label's `rect_position` over 0.4 seconds. It's a
-	# bit faster than the miss label and uses an ease-out so the animation feels dynamic.
+	# The Tween node takes care of animating the Label's `rect_position`.
+	# It uses an ease-out so the animation feels dynamic.
 	_tween.interpolate_property(
 		_label,
 		"rect_position",
 		_label.rect_position,
 		_label.rect_position + offset,
-		0.4,
+		1.4,
 		Tween.TRANS_QUAD,
 		Tween.EASE_OUT
 	)
-	# The fade-out animation starts after a 0.3 seconds delay and lasts 0.1 seconds. 
+	# The fade-out animation starts after a delay
 	# This makes it so the Label quickly fades out and disappears at the end.
 	_tween.interpolate_property(
-		self, "modulate", modulate, COLOR_TRANSPARENT, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN, 0.3
+		self, "modulate", modulate, COLOR_TRANSPARENT, 0.3, Tween.TRANS_LINEAR, Tween.EASE_IN, 1.0
 	)
 	_tween.start()
 	# We finally wait for all tweens to complete before freeing the node.
