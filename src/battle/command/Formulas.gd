@@ -3,7 +3,9 @@ extends Reference
 
 # Returns the product of the attacker's attack and the action's multiplier.
 static func calculate_potential_damage(action_data: ActionData, attacker) -> float:
-	return attacker.stats.attack * action_data.damage * action_data.damage_multiplier
+	var potential_damage = attacker.stats.attack * action_data.damage * action_data.damage_multiplier
+	print("calculate_potential_damage: %s * %s * %s = %s" % [attacker.stats.attack, action_data.damage, action_data.damage_multiplier, potential_damage])
+	return potential_damage
 
 # The base damage is "attacker.attack * action.multiplier - defender.defense".
 # The function multiplies it by a weakness multiplier, calculated by

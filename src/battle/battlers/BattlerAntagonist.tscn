@@ -5,7 +5,7 @@
 [ext_resource path="res://src/battle/battlers/antagonist.tres" type="Resource" id=3]
 [ext_resource path="res://src/battle/anim/BattlerAnim.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/battle/statuseffects/StatusEffectContainer.gd" type="Script" id=5]
-[ext_resource path="res://src/battle/battlers/player_stats.tres" type="Resource" id=6]
+[ext_resource path="res://src/battle/battlers/enemy_stats.tres" type="Resource" id=6]
 
 [node name="BattlerAntagonist" type="Node2D"]
 z_index = 49
