@@ -53,6 +53,7 @@ centered = false
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Train"]
 stream = ExtResource( 6 )
+volume_db = -10.0
 autoplay = true
 
 [node name="Combat" parent="." instance=ExtResource( 1 )]
